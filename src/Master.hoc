@@ -1,0 +1,30 @@
+
+run() //with connection
+fileob.wopen("GangExperimentndTracew.txt")
+for i=1, voltagevec.size()-1{
+    fileob.printf("%g %g \n", i, voltagevec.x[i])
+            }
+fileob.close()
+ndw=voltagevec.max()
+
+
+//remove connection
+for iS=0, numSACs-1{ 
+    for iC=0, SAC[iS].receivesCl.count()-1{
+        SAC[iS].receivesCl.object(iC).g=0
+    } 
+}
+
+
+run()
+fileobob.wopen("GangExperimentndTracewout.txt")
+for i=1, voltagevec.size()-1{
+    fileobob.printf("%g %g \n", i, voltagevec.x[i])
+            }
+fileobob.close()
+ndwout=voltagevec.max()
+
+
+fileobob.wopen("GangExperimentDSvsSC.txt")
+fileobob.printf("%g %g %g %g\n", Mspeed, 1/Mcontrast, ndw, ndwout )
+fileobob.close()

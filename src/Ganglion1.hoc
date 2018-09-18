@@ -1,0 +1,72 @@
+
+GsomaL=10
+//-----------------------------------template
+begintemplate ganglion
+    external GsomaL
+    public soma
+    create soma
+    
+    proc init(){
+        create soma
+        access soma
+        soma.L=GsomaL
+        soma.diam=GsomaL
+    }
+
+endtemplate ganglion
+
+objectvar DSGC
+DSGC= new ganglion()
+
+objectvar syn
+syn= new Bip(.5)
+syn.e=-60
+syn.tau=7
+
+//--------------------------------record chloride current
+objectvar CLIrec
+CLIrec=new Vector()
+CLIrec.record(&syn.i,1)
+
+//--------------------------------graph
+run()
+
+objectvar g2
+g2= new Graph()
+g2.size(0,1000,-.2, 1.7)
+t=0
+g2.addexpr("SAC[0].ICArecList.object(0).get(t)")
+g2.color(3)
+g2.addexpr("SAC[0].CAIrecList.object(0).x[t]")
+g2.begin()
+for(t=0; t<1000; t+=1){
+    g2.plot(t)
+}
+g2.flush()
+
+objectvar g3
+g3= new Graph()
+g3.size(0,1000,-.2, 1.7)
+t=0
+g3.addexpr("CLIrec.get(t)")
+
+g3.begin()
+for(t=0; t<1000; t+=1){
+    g3.plot(t)
+}
+g3.flush()
+
+print "attention ", CLIrec.get(500)
+print "angles ", SAC[0].variAngle.size()
+
+//list of angles
+objectvar g4
+g4= new Graph()
+g4.size(0,48,-3.2,3.2)
+numv=0
+g4.addexpr("SAC[0].variAngle.x[numv]")
+g4.begin()
+for( numv=0; numv<=SAC[0].variAngle.size()-1;numv+=1){
+    g4.plot(numv)
+}
+g4.flush()

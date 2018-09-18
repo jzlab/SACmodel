@@ -1,0 +1,154 @@
+
+
+ClampingExperiment=1
+ClampExpDifVoltages=1
+ClampExpVoltageStep=1
+/*
+if (ClampingExperiment){
+    load_file("MainA.hoc")
+    load_file ("BuildSAC.hoc")
+    load_file ("Delay&ConnectSAC.hoc")
+    load_file ("testingSAC.hoc")
+    build_delay()
+}
+*/
+
+if (ClampingExperiment){
+    expnumSACs=2          //general setup            
+    expbipG1=0
+    expbipG2=0
+    exptstop=800
+   
+
+    build_delay(4)
+    connecting()
+    
+    numclamps=2                //clamp setup
+    objectvar clamps[numclamps]
+    del=50
+    dur=200
+    
+
+    access SAC[0].soma
+    clamps[0]=new VClamp(.5)
+    clamps[0].dur[0]=tstop
+    clamps[0].amp[0]=0
+
+    access SAC[1].soma
+    clamps[1]=new VClamp(.5)
+    clamps[1].dur[0]=del
+    clamps[1].amp[0]=-65
+    clamps[1].dur[1]=dur
+    clamps[1].dur[2]=tstop-del-dur
+    clamps[1].amp[2]=-65
+
+    objectvar clampcurrent      //record from postsyn soma
+    clampcurrent=new Vector()
+    clampcurrent.record(&clamps[0].i,1)
+    
+    objectvar lee2006                                 
+    lee2006= new File()
+    
+    if(ClampExpDifVoltages){                  // trials with different voltage steps
+        lee2006.wopen("lee2006graph.txt")             
+        for i2=1, 9{              
+            clamps[1].amp[1]=-65+10*i2
+            run()
+            print "voltage is ",-65+10*i2, " current amp is ",clampcurrent.max(del/2-1,tstop-1)-clampcurrent.x[(del/2)-1]
+            lee2006.printf("%g, %g\n",clamps[1].amp[1], clampcurrent.max(del/2-1,tstop-1)-clampcurrent.x[(del/2)-1])
+        }
+        lee2006.close()
+    }
+    if(ClampExpVoltageStep){                 // examine one voltage step of height 10x usually 5
+        i2=5    
+        clamps[1].amp[1]=-65+10*i2
+        run()
+        lee2006.wopen("lee2006current15.txt")
+        clampcurrent.printf(lee2006)
+        lee2006.close()
+
+
+        objectvar g7
+        g7=new Graph()
+        g7.size(0,800,0,1.7)
+        g7.color(2)
+        g7.label("clampcurrent")
+        g7.beginline()
+        for (t=0;t<=tstop;t+=1){
+            g7.line(t,clampcurrent.get(t))
+        }
+        g7.flush()
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+objectvar lee2006
+lee2006= new File()
+//------------maximum of different voltage steps
+/*  
+lee2006.wopen("lee2006graph.txt")
+
+for i2=1, 10{
+    clamps[1].amp[1]=-65+10*i2
+    run()
+    print "voltage is ",-65+10*i2, " current amp is ",clampcurrent.max(del/2-1,tstop-1)-clampcurrent.x[(del/2)-1]
+    lee2006.printf("%g, %g\n",clamps[1].amp[1], clampcurrent.max(del/2-1,tstop-1)-clampcurrent.x[(del/2)-1])
+}
+lee2006.close()
+*/
+
+//----------a particular voltage step 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+build()
+savetrueangle()
+choiceSAC=0
+for k=0, SAC[choiceSAC].trueAngle.size()-1{
+    thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)
+    //print "theta is ", thetas.x[choiceSAC]
+        
+        //savevariangle()
+        //print SAC[choiceSAC].trueAngle.get(k), SAC[choiceSAC].variAngle.get(k) 
+        
+    delay()
+    run()
+    pdCAi=SAC[choiceSAC].VrecList.object(k).max()
+    //print pdCAi
+    if(SAC[choiceSAC].trueAngle.get(k)>0){
+        thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)-PI
+    }else{
+        thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)+PI
+    }
+    //print "theta is ", thetas.x[choiceSAC]
+    delay()
+    run()
+    ndCAi=SAC[choiceSAC].VrecList.object(k).max()
+    //print ndCAi
+    print(pdCAi-ndCAi)
+}
+*/

@@ -1,0 +1,162 @@
+
+proc build(){
+    for i=0,numSACs-1{
+        SAC[i]=new star(Xorg.x[i],Yorg.x[i])
+        if(nodends==0){
+            for ibipSyn=0, SAC[i].bipSynapses.count()-1{
+                SAC[i].bipSynapses.object(ibipSyn).g1max=bipG1
+                SAC[i].bipSynapses.object(ibipSyn).g2max=bipG2
+
+            }
+        }
+    }
+}
+
+proc delay(){
+    for i=0,numSACs-1{
+        for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
+            x=SAC[i].bipSynapses.object(ibipSyn).locx
+            y=SAC[i].bipSynapses.object(ibipSyn).locy
+            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))/bipspeed +50+dendL
+
+        }
+    }
+}
+proc biptimes(){
+    smalldel=tstop
+    bigdel=-1
+    for i=0,numSACs-1{
+        for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
+            if(SAC[i].bipSynapses.object(ibipSyn).del<smalldel){
+                smalldel=SAC[i].bipSynapses.object(ibipSyn).del
+            }
+            if(SAC[i].bipSynapses.object(ibipSyn).del>bigdel){
+                bigdel=SAC[i].bipSynapses.object(ibipSyn).del
+            }
+        }
+    }
+    print "begin ", smalldel, " end ", bigdel
+}
+proc gangdelay(){
+    for ibipSyn=0, Gang.bipSynapses.count()-1{
+        x=Gang.bipSynapses.object(ibipSyn).locx
+        y=Gang.bipSynapses.object(ibipSyn).locy
+        Gang.bipSynapses.object(ibipSyn).del= ((cos(thetas.x[0])*x+sin(thetas.x[0])*y))/bipspeed +50+dendL
+        Gang.bipSynapses.object(ibipSyn).g1max=bipG1
+        Gang.bipSynapses.object(ibipSyn).g2max=bipG2
+    }
+}
+
+
+proc savetrueangle(){
+    for i2=0, numSACs-1{
+        for ivari=0, SAC[i2].VrecXpos.size()-1{
+            x=SAC[i2].VrecXpos.get(ivari)
+            y=SAC[i2].VrecYpos.get(ivari)
+            x1=x-Xorg.get(i2)         
+            y1=y-Yorg.get(i2)
+            SAC[i2].trueAngle.append(atan2(y1,x1))
+        }
+    }
+}
+
+proc savevariangle(){
+    for i2=0, numSACs-1{
+        
+            if(SAC[i2].variAngle.size()>0){
+                SAC[i2].variAngle.remove(0,SAC[i2].variAngle.size()-1)
+            }
+        
+        for ivari=0, SAC[i2].VrecXpos.size()-1{
+
+            x=SAC[i2].VrecXpos.get(ivari)
+            y=SAC[i2].VrecYpos.get(ivari)
+            x1=x-Xorg.get(i2)         
+            y1=y-Yorg.get(i2)
+            newy=(cos(thetas.x[i2])*y1-sin(thetas.x[i2])*x1)
+            newx=(sin(thetas.x[i2])*y1+cos(thetas.x[i2])*x1)
+            SAC[i2].variAngle.append(atan2(newy,newx)) 
+        }
+    }
+}
+//--------------------------------conditionally connecting procedure
+objectvar temp
+proc connecting(){
+for i2=0, numSACs-1{     //switch back //numSACs-1
+
+    for ivari=0, SAC[i2].VrecList.count()-1{
+        x=SAC[i2].VrecXpos.get(ivari)
+        y=SAC[i2].VrecYpos.get(ivari)  
+        
+            for iSAC=0, numSACs-1{
+                if (iSAC==i2){ 
+                }else{
+                
+                    if(((Xorg.x[iSAC]-x)^2)+ ((Yorg.x[iSAC]-y)^2)<(dendL/4)^2){      //we're close enough to the iSAC
+                        for idend=0, numFirst-1{
+                            access SAC[iSAC].dend[idend]
+                            dendx= SAC[iSAC].InnerXpos.x[idend] 
+                            dendy= SAC[iSAC].InnerYpos.x[idend]
+                            
+                            if(((dendx-x)^2 + (dendy-y)^2)< SACmaxDist^2){           //we're close enough to the dend
+                                temp=new ComplexCl2(.5) 
+                                temp.thres=clchannelthres
+                                setpointer temp.capre, SAC[i2].dend[numInside+ivari].cai(.8)
+                                SAC[iSAC].receivesCl.append (temp)                   //i2 provides the gaba isac receives it
+                                temp= new Vector(2)
+                                temp.x[0]=i2
+                                temp.x[1]=ivari
+                                SAC[iSAC].fromList.append(temp)
+                    
+                            }
+                        }
+                    } else{
+                        continue
+                    }                                                        
+                }
+            }
+    }
+}
+}
+proc fauxconnect(){
+    FauxRing[chosenSAC]=new fauxring()
+    for ivari=0, numOutside-1{
+        access FauxRing[chosenSAC].dend[ivari]
+        temp=new ComplexCl2(.5)
+        temp.thres=clchannelthres
+        setpointer temp.capre, SAC[chosenSAC].dend[numInside+ivari].cai(.8)
+        SAC[chosenSAC].fauxvari.append(temp)
+        temp=new Vector()
+        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).numreleased,1)
+        SAC[chosenSAC].fauxvarirelease.append(temp)
+        temp=new Vector()
+        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).i,1)
+        SAC[chosenSAC].fauxvaricurrent.append(temp)
+    }
+}
+
+
+
+
+
+proc clampsetup(){
+    del=500
+    dur=200
+    access SAC[$1].soma
+    clamps[0]=new VClamp(.5)
+    clamps[0].dur[0]=tstop
+    clamps[0].amp[0]=0
+
+    access SAC[$2].soma
+    clamps[1]=new VClamp(.5)
+    clamps[1].dur[0]=del
+    clamps[1].amp[0]=-70
+    clamps[1].dur[1]=dur
+    clamps[1].dur[2]=tstop-del-dur
+    clamps[1].amp[2]=-70
+}
+
+
+
+
+

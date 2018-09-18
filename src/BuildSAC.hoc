@@ -1,0 +1,218 @@
+begintemplate star
+    external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg
+    external bipDensity, bipMaxDist, nodends
+    public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
+    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    create soma, dend[2] 
+    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
+    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    
+    proc Morph(){
+        objectvar temp
+        for idend=0, numFirst-1 {
+            connect dend[idend](0),soma(0)
+            access dend[idend]
+            pt3dadd($1,$2,0,dendD0)      
+        }
+       
+        for igen=0, numGen-1 {
+            rad=dendL*(igen+1)/numGen
+            numD_gen=numFirst*2^(igen)
+            dendDiam=(dendD0-dendD1)*igen/numGen+dendD1
+            dendDiamNext= (dendD0-dendD1)*(igen+1)/numGen+dendD1
+            
+            for idend=0,numD_gen-1{
+                access dend[idend+GenCount]
+                locx=rad*cos((idend+rotate)*2/numD_gen*PI)
+                locy=rad*sin((idend+rotate)*2/numD_gen*PI)
+                pt3dadd(locx+$1,locy+$2,0,dendDiam)          //---last point on original dend
+                    if (GenCount==0)  { 
+                    InnerXpos.append(x3d(0)+(x3d(1)-x3d(0))*(.5))
+                    InnerYpos.append(y3d(0)+(y3d(1)-y3d(0))*(.5))
+                    }
+                nseg=5
+                
+                if (igen<numGen-1) {                         //---before last generation - do put 0 point for next generation 2 dends
+                    access dend[idend*2+GenCount+numD_gen]
+                    pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
+                    connect dend[idend*2+GenCount+numD_gen](0), dend[idend+GenCount](1)
+                    
+                    access dend[idend*2+GenCount+numD_gen+1]
+                    pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
+                    connect dend[idend*2+GenCount+numD_gen+1](0), dend[idend+GenCount](1)
+                }else{
+                    temp=new Vector()
+                    temp.record(&v(0.8),1)
+                    VrecList.append(temp)
+                    VrecXpos.append(x3d(0)+(x3d(1)-x3d(0))*(.8))
+                    VrecYpos.append(y3d(0)+(y3d(1)-y3d(0))*(.8))
+                    
+                    
+                        temp=new Vector()           //voltage to current to concentration
+                        insert calrgc
+                        shift_calrgc=cachannelshift
+                        gbar_calrgc=cachannelg
+                        temp.record (&ica(.8),1)
+                        ICArecList.append(temp)
+                        temp=new Vector()
+                        temp.record(&test_calrgc(.8),1)
+                        MrecList.append(temp)
+                        temp= new Vector()         
+                        insert cadiff
+                        temp.record (&cai(.8),1)
+                        CAIrecList.append(temp)
+                        
+                        CalciumChannel.append()
+                    
+                }
+                
+            }
+            rotate=-.5- (igen^1.5)
+           // rotate=-.5-(igen*(3/2))
+            GenCount+=numD_gen
+        }
+    }
+    proc placeBip(){
+        objectvar temp
+        distance()                  //set origin as soma(0)
+        bipSynapses=new List()
+        
+        for idend=0, numDend-1{
+            access dend[idend]
+            numSyn=int(L/bipDensity)
+            for iS_D=0, numSyn-1{
+                loc=(iS_D+1)/(numSyn+1)
+                if (distance((loc))<bipMaxDist){
+
+                    temp=new Bip(loc)
+                    temp.locx= x3d(0)+(x3d(1)-x3d(0))*(loc)
+                    temp.locy= y3d(0)+(y3d(1)-y3d(0))*(loc)
+                    temp.e=0
+                    bipSynapses.append(temp)
+                }
+            }
+        }
+    }
+
+    proc init(){
+        //print $1,$2
+        create soma
+        access soma
+        if (nodends){
+            soma.diam=100
+            soma.L=100
+        }
+
+        pt3dadd($1,$2,0,somaL)
+        pt3dadd($1,$2,somaL,somaL)
+        if(nodends){break}
+        create dend[numDend]
+        
+        VrecList=new List()
+        InnerXpos= new Vector()
+        InnerYpos= new Vector()
+        VrecXpos=new Vector()
+        VrecYpos=new Vector()
+        variAngle=new Vector()
+        trueAngle= new Vector()
+        ICArecList=new List()
+        CAIrecList= new List()
+        receivesCl= new List()
+        fromList= new List()
+        MrecList= new List()
+        fauxvari=new List()
+        fauxvarirelease=new List()
+        fauxvaricurrent=new List()
+        gangConnects=new Vector(3)
+        gangConnects.x[0]=0
+        gangConnects.x[1]=0
+        gangConnects.x[2]=0
+        CalciumChannel=new SectionList()
+        
+        GenCount=0
+		rotate=0
+        
+        Morph($1,$2)
+        forall{
+            insert pas
+        }
+        access soma
+        placeBip()
+    }
+endtemplate star
+
+begintemplate fauxring
+    external numOutside, dendD0, dendL, numGen
+    public dend
+    create dend[2]
+
+    proc init(){
+        create dend[numOutside]
+        for i=0, numOutside-1{
+            dend[i].diam=dendD0
+            dend[i].L=dendL/numGen
+        }
+    }
+
+endtemplate fauxring
+
+begintemplate ganglion
+    external gangL, dendD0, somaL, numgangDend, bipDensity
+    public soma, dend, receivesCl, fromList, bipSynapses
+    objectvar receivesCl[2], fromList, temp, bipSynapses
+    create soma, dend[2]
+    proc placeBip(){
+        objectvar temp
+        distance()                  //set origin as soma(0)
+        bipSynapses=new List()
+        
+        for idend=0, numgangDend-1{
+            access dend[idend]
+            numSyn=int(L/bipDensity)
+            for iS_D=0, numSyn-1{
+                loc=(iS_D+1)/(numSyn+1)
+                temp=new Bipg(loc)
+                temp.locx= x3d(0)+(x3d(1)-x3d(0))*(loc)
+                temp.locy= y3d(0)+(y3d(1)-y3d(0))*(loc)
+                temp.e=0
+                bipSynapses.append(temp)
+                
+            }
+        }
+    }
+    proc init(){
+        objectvar receivesCl[numgangDend]
+        for w=0,numgangDend-1{
+            receivesCl[w]=new List()
+        }
+        fromList=new List()
+        print $1,$2
+        create soma
+        create dend[numgangDend]
+        access soma
+        pt3dadd($1,$2,0,somaL)
+        pt3dadd($1,$2,somaL,somaL)
+
+         for idend=0, numgangDend-1 {
+            connect dend[idend](0),soma(0)
+            access dend[idend]
+            pt3dadd($1,$2,0,dendD0)      
+            pt3dadd($1+gangL*cos(idend*((2*PI)/numgangDend)), $2+gangL*sin(idend*(2*PI)/numgangDend),0, dendD0)
+            nseg=20
+        }
+        access soma
+        placeBip()
+    }
+
+endtemplate ganglion
+
+begintemplate simple
+public soma
+create soma
+proc init(){
+    create soma
+    access soma
+    insert calrgc
+}
+endtemplate simple
+
