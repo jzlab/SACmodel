@@ -2,10 +2,10 @@ begintemplate star
     external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg
     external bipDensity, bipMaxDist, nodends
     public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
-    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects
     create soma, dend[2] 
     objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
-    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects
     
     proc Morph(){
         objectvar temp
@@ -42,7 +42,7 @@ begintemplate star
                     connect dend[idend*2+GenCount+numD_gen+1](0), dend[idend+GenCount](1)
                 }else{
                     temp=new Vector()
-                    temp.record(&v(0.8),1)
+                    temp.record(&v(0.5))
                     VrecList.append(temp)
                     VrecXpos.append(x3d(0)+(x3d(1)-x3d(0))*(.8))
                     VrecYpos.append(y3d(0)+(y3d(1)-y3d(0))*(.8))
@@ -102,7 +102,9 @@ begintemplate star
             soma.diam=100
             soma.L=100
         }
-
+        insert readica
+        CalciumCurrent=new Vector()
+        CalciumCurrent.record(&ica(.5),1)
         pt3dadd($1,$2,0,somaL)
         pt3dadd($1,$2,somaL,somaL)
         if(nodends){break}
@@ -120,9 +122,6 @@ begintemplate star
         receivesCl= new List()
         fromList= new List()
         MrecList= new List()
-        fauxvari=new List()
-        fauxvarirelease=new List()
-        fauxvaricurrent=new List()
         gangConnects=new Vector(3)
         gangConnects.x[0]=0
         gangConnects.x[1]=0
@@ -140,21 +139,6 @@ begintemplate star
         placeBip()
     }
 endtemplate star
-
-begintemplate fauxring
-    external numOutside, dendD0, dendL, numGen
-    public dend
-    create dend[2]
-
-    proc init(){
-        create dend[numOutside]
-        for i=0, numOutside-1{
-            dend[i].diam=dendD0
-            dend[i].L=dendL/numGen
-        }
-    }
-
-endtemplate fauxring
 
 begintemplate ganglion
     external gangL, dendD0, somaL, numgangDend, bipDensity
@@ -215,4 +199,3 @@ proc init(){
     insert calrgc
 }
 endtemplate simple
-

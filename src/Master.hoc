@@ -1,10 +1,15 @@
-
+objectvar fileobob
+fileobob=new File()
+Mangle=0
+Mcontrast=3
+Mspeed=2
+load_file("MainA.hoc")
 run() //with connection
-fileob.wopen("GangExperimentndTracew.txt")
+fileobob.wopen("GangExperimentndTracew.txt")
 for i=1, voltagevec.size()-1{
-    fileob.printf("%g %g \n", i, voltagevec.x[i])
+    fileobob.printf("%g %g \n", i, voltagevec.x[i])
             }
-fileob.close()
+fileobob.close()
 ndw=voltagevec.max()
 
 

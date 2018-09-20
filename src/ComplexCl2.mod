@@ -13,7 +13,7 @@ PARAMETER{
     e=-65
     capre=0
     ca_baseline=.0001
-    thres=.0000          :1.4715
+    thres=.0005          :1.4715
     amp=.09
     numves= 5 (integer)
     regentime=900: 300
@@ -121,7 +121,7 @@ FUNCTION getnumreleased(capre1,t2){
     
         if(capre1>thres){
             
-            probrelease=(capre1*capre1*capre1*capre1)*8000000
+            probrelease=(capre1*capre1*capre1*capre1)/20
             :probrelease= (capre1-thres)*tan(1.52)
         }else{
             probrelease=0

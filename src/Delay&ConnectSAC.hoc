@@ -22,21 +22,6 @@ proc delay(){
         }
     }
 }
-proc biptimes(){
-    smalldel=tstop
-    bigdel=-1
-    for i=0,numSACs-1{
-        for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
-            if(SAC[i].bipSynapses.object(ibipSyn).del<smalldel){
-                smalldel=SAC[i].bipSynapses.object(ibipSyn).del
-            }
-            if(SAC[i].bipSynapses.object(ibipSyn).del>bigdel){
-                bigdel=SAC[i].bipSynapses.object(ibipSyn).del
-            }
-        }
-    }
-    print "begin ", smalldel, " end ", bigdel
-}
 proc gangdelay(){
     for ibipSyn=0, Gang.bipSynapses.count()-1{
         x=Gang.bipSynapses.object(ibipSyn).locx
@@ -82,7 +67,7 @@ proc savevariangle(){
 //--------------------------------conditionally connecting procedure
 objectvar temp
 proc connecting(){
-for i2=0, numSACs-1{     //switch back //numSACs-1
+for i2=0, numSACs-1{     //switch back
 
     for ivari=0, SAC[i2].VrecList.count()-1{
         x=SAC[i2].VrecXpos.get(ivari)
@@ -117,27 +102,8 @@ for i2=0, numSACs-1{     //switch back //numSACs-1
             }
     }
 }
+
 }
-proc fauxconnect(){
-    FauxRing[chosenSAC]=new fauxring()
-    for ivari=0, numOutside-1{
-        access FauxRing[chosenSAC].dend[ivari]
-        temp=new ComplexCl2(.5)
-        temp.thres=clchannelthres
-        setpointer temp.capre, SAC[chosenSAC].dend[numInside+ivari].cai(.8)
-        SAC[chosenSAC].fauxvari.append(temp)
-        temp=new Vector()
-        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).numreleased,1)
-        SAC[chosenSAC].fauxvarirelease.append(temp)
-        temp=new Vector()
-        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).i,1)
-        SAC[chosenSAC].fauxvaricurrent.append(temp)
-    }
-}
-
-
-
-
 
 proc clampsetup(){
     del=500
