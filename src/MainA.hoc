@@ -272,7 +272,7 @@ SimpleClamp=0
     FileNumber=1
     load_file("nrngui.hoc")
     load_file("BuildSAC.hoc")
-    load_file("Delay&ConnectSAC.hoc")
+    load_file("Delay_ConnectSAC.hoc")
     load_file("testingSAC.hoc")
     
     if(1==1){
