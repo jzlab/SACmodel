@@ -8,18 +8,21 @@ expnumSACs=1
 expbipG1=1
 expbipG2=.2
 exptstop=1000
-expcontrast=1
+expcontrast=3
+nodends=0
+network=0
 expangle=0
 expbipspeed=2
-nodends=0
 
 
 GanglionExperiment=0
 SingleSACExperiment=0
 SingleSACDingExperiment=0
 TwoSACLeeExperiment=0
+TwoSACLeeExperimentSimple=1
 clchannelcheck=0
-SingleSACVGCCExperiment=1
+SingleSACVGCCExperiment=0 
+ThreeSACVGCCcheck=0
 
 
 
@@ -33,180 +36,200 @@ if (GanglionExperiment){
     expangle=0
     expcontrast=3
     expbipspeed=2
-}
-if (SingleSACExperiment){
-    expnumSACs=1
-    exptstop=800
-    expcontrast=2
     
 }
-if (SingleSACDingExperiment){
-    expnumSACs=1
-    exptstop=800
-    expcontrast=3
-}
-if(TwoSACLeeExperiment){
-    expnumSACs=2
-    expbipG1=0
-    expbipG2=0
-    exptstop=1500
-}
-if(clchannelcheck){
-    expnumSACs=2
-    exptstop=1500
-}
-if (SingleSACVGCCExperiment){
-    exptstop=300
-    expbipG1=0
-    expbipG2=0
-    expnumSACs=1
-
-}
-//-----------------------------------BEGIN PARAMETERS
-tstop=exptstop
-//SAC cell morphology
-numGen=4
-numFirst=6
-numDend=0
-numInner=0
-somaL=10
-dendD0=.5
-dendL=140
-dendD1=0.2
-
-for igen=0,numGen-1{
-numDend+=numFirst*2^(igen)
-}
-numOutside=numFirst*2^(numGen-1)
-numInside=numDend-numOutside
-
-//bip placement
-amountoflowcontrast=1
-bipDensity=15
-bipMaxDist=100
-
-bipG1=expbipG1/expcontrast    //expcontrast
-bipG2=expbipG2/expcontrast
-
-    //miu meters per millisecond
-bipspeed=expbipspeed
-
-//SAC building
-objectvar thetas
-numSACs=expnumSACs
-thetas = new Vector(numSACs)
-for i=0,numSACs-1{
-    thetas.x[i]=expangle
-  
-}
-SACmaxDist=30
-clchannelthres=.008
-cachannelshift=56
-cachannelg=.0005
-
-objectvar Xorg, Yorg
-objectvar ranCord
-
-if(TwoSACLeeExperiment||clchannelcheck){
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-    Xorg.x[1]=120
-}else if(GanglionExperiment){
-    /*
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-    Xorg.x[0]=60
-    Yorg.x[0]=60
-    */
-    /*
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector()
-
-    for irow=0,griddim-1 {
-        for i=0,griddim-1{
-            Yorg.append(irow*ssdist)
+    if (SingleSACExperiment){
+        expnumSACs=1
+        exptstop=800
+        expcontrast=3
+        
+    }
+    if(TwoSACLeeExperiment){
+        expnumSACs=2
+        expbipG1=0
+        expbipG2=0
+        exptstop=1500
+        network=0
+        if(network){
+            ssdist=60
+            griddim=300/ssdist +5
+            expnumSACs=griddim*griddim
+            expangle=0
+            expcontrast=3
+            expbipspeed=2
         }
     }
-    for icol=0,griddim-1{
-        for i=0,griddim-1{
-        Xorg.x[icol+griddim*i]=(icol*ssdist)
-        }
+{}
+
+    if (SingleSACDingExperiment){
+        expnumSACs=1
+        exptstop=800
+        expcontrast=1
     }
-    likelySAC=.1
-    */
+    if(ThreeSACVGCCcheck){
+        expnumSACs=3
+        expcontrast=2
+    }
     
-    ranCord=new Random()
-    ranCord.uniform(0,(griddim-1)*ssdist)
-
-    Xorg=new Vector(numSACs)
-    Yorg=new Vector(numSACs)
-    for i=0, numSACs-1{
-        Xorg.x[i]=ranCord.repick()
-        Yorg.x[i]=ranCord.repick()
+    if(clchannelcheck){
+        expnumSACs=2
+        exptstop=1500
     }
-}else{
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-}
+    if (SingleSACVGCCExperiment){
+        exptstop=300
+        expbipG1=0
+        expbipG2=0
+        expnumSACs=1
 
-//Gang building
-gangL=150
-numgangDend=12
-SACgangDist=15
+    }
+    //-----------------------------------BEGIN PARAMETERS
+    tstop=exptstop
+    //SAC cell morphology
+    numGen=4
+    numFirst=6
+    numDend=0
+    numInner=0
+    somaL=10
+    dendD0=.5
+    dendL=140
+    dendD1=0.2
 
-CalciumConductance=.05
-//-------------------------------END PARAMETERS
-//-------------------------------declare some objectvars
-numclamps=2 
-top=14
-objectvar testg, testg2, g6, g5, g7, g8, g9, g4, testg4, testg3, SAC[numSACs], fileob, g, voltagevec, timevec, maxdifvec, clamps[numclamps], clampcurrent, without[top], with[top]
-objectvar voltagejumps, randSAC, Gang, temp, currentmaxs, differencemin, List1, List2, temp2, difference[top], Simple, vec1, vec2
-testg=new Vector()
-testg2=new Vector()
-testg3=new Vector()
-testg4=new Vector()
-g4=new Graph()
-g6=new Graph()
-g5=new Graph()
-g7=new Graph()
-g8=new Graph()
-g9=new Graph()
-fileob= new File()
-g=new Graph()
-voltagevec=new Vector()
-timevec= new Vector()
-maxdifvec=new Vector()
-clampcurrent=new Vector()
-currentmaxs=new Vector()
-voltagejumps=new Vector()
-randSAC=new Random()
-randSAC.uniform(0,1)
-differencemin=new Vector()
-for i=0, top-1{
-    without[i]=new Vector()
-    with[i]=new Vector()
-    difference=new Vector()
-}
-List1=new List()
-List2=new List()
-vec1=new Vector()
-vec2=new Vector()
+    for igen=0,numGen-1{
+    numDend+=numFirst*2^(igen)
+    }
+    numOutside=numFirst*2^(numGen-1)
+    numInside=numDend-numOutside
+
+    //bip placement
+    amountoflowcontrast=1
+    bipDensity=15
+    bipMaxDist=100
+    bipG1=expbipG1/expcontrast    //expcontrast
+    bipG2=expbipG2/expcontrast
+    bipspeed=expbipspeed
+    //SAC building
+    objectvar thetas
+    numSACs=expnumSACs
+    thetas = new Vector(numSACs)
+    for i=0,numSACs-1{
+        thetas.x[i]=expangle
+    }
+    SACmaxDist=30
+    clchannelthres=0//.008
+    cachannelshift=22
+    cachannelg=.005//10000000
+
+    objectvar Xorg, Yorg
+    objectvar ranCord
+
+    if(GanglionExperiment||(network&&TwoSACLeeExperiment)){
+        /*
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+        Xorg.x[0]=60
+        Yorg.x[0]=60
+        */
+        /*
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector()
+
+        for irow=0,griddim-1 {
+            for i=0,griddim-1{
+                Yorg.append(irow*ssdist)
+            }
+        }
+        for icol=0,griddim-1{
+            for i=0,griddim-1{
+            Xorg.x[icol+griddim*i]=(icol*ssdist)
+            }
+        }
+        likelySAC=.1
+        */
+        
+        ranCord=new Random()
+        ranCord.uniform(0,(griddim-1)*ssdist)
+
+        Xorg=new Vector(numSACs)
+        Yorg=new Vector(numSACs)
+        for i=0, numSACs-1{
+            Xorg.x[i]=ranCord.repick()
+            Yorg.x[i]=ranCord.repick()
+        }
+    }else if(TwoSACLeeExperiment||clchannelcheck||ThreeSACVGCCcheck){
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+        Xorg.x[1]=120
+        if(ThreeSACVGCCcheck){
+            Xorg.x[2]=-120
+        }
+    }else  {
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+    }
+
+    //Gang building
+    gangL=150
+    numgangDend=12
+    SACgangDist=15
+
+    CalciumConductance=.05
+    //-------------------------------END PARAMETERS
+    //---------------------------
+    numSimp=2
+    top=10
+    numclamps=2
+    chosenSAC=0
+    objectvar testg, testg2, g6, g5, g7, g8, g9, g4, testg4, testg3, SAC[numSACs], fileob, g, voltagevec, timevec, maxdifvec, clamps[numclamps], clampcurrent, without[top], with[top], FauxRing[2], simplething
+    objectvar voltagejumps, randSAC, Gang, temp, currentmaxs, differencemin, List1, List2, temp2, difference[top], Simple[numSimp], vec1, vec2, randSACs, randCon
+    testg=new Vector()
+    testg2=new Vector()
+    testg3=new Vector()
+    testg4=new Vector()
+    g4=new Graph()
+    g6=new Graph()
+    g5=new Graph()
+    g7=new Graph()
+    g8=new Graph()
+    g9=new Graph()
+    fileob= new File()
+    g=new Graph()
+    voltagevec=new Vector()
+    timevec= new Vector()
+    maxdifvec=new Vector()
+    clampcurrent=new Vector()
+    currentmaxs=new Vector()
+    voltagejumps=new Vector()
+    randSAC=new Random()
+    randSAC.uniform(0,1)
+    randSACs=new Random(10)
+    randSACs.uniform(0,numSACs-1)
+    randCon=new Random()
+    differencemin=new Vector()
+    for i=0, top-1{
+        without[i]=new Vector()
+        with[i]=new Vector()
+        difference=new Vector()
+    }
+    List1=new List()
+    List2=new List()
+    vec1=new Vector()
+    vec2=new Vector()
 
 
 
-load_file("BuildSAC.hoc")
-load_file("Delay&ConnectSAC.hoc")
-load_file("testingSAC.hoc")
-//------------------------------------------EXPERIMENTS
+    load_file("BuildSAC.hoc")
+    load_file("Delay&ConnectSAC.hoc")
+    load_file("testingSAC.hoc")
+    //------------------------------------------EXPERIMENTS
 
 if(GanglionExperiment){
     //-----------------------------------------------BUILDING PHASE
     print "GanglionExperiment"
-    running=0
+    running=1
     //experiments to choose from
-    ds=0
+    ds=1
     vclamping=0
-    printaboutconnections=1
+    printaboutconnections=0
     {}
         gango=((griddim)*ssdist/2)
         Gang=new ganglion(gango,gango)
@@ -379,35 +402,78 @@ if(clchannelcheck){
     graphG5()
     graphG6()
 }
+if(ThreeSACVGCCcheck){
+    build()
+    delay()
+    savevariangle()
+    connecting()  //Only one connects to the others
+
+    chosenSAC=0
+    graphAngleCA()
+    for w=0, SAC[chosenSAC].variAngle.size()-1{
+        num= SAC[chosenSAC].CAIrecList.object(w).max()
+        voltagevec.append(num)
+    }
+
+    fileob.wopen("SingleSACExperimentVvsAngle.txt")
+    fileob.printf("Maximum_Calcium_Concentration_Across_Angles \n")
+    fileob.printf("Angle Max_CAi \n")
+    for i=0,SAC[chosenSAC].variAngle.size()-1{
+        fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[i],voltagevec.x[i] )
+    }
+    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0] )
+    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1] )
+    fileob.close()
+}
 if(TwoSACLeeExperiment){
+    print "TwoSACLeeExperiment"
     takingtrace=1
-    vto=-25
+    vto=-45
 
     build()
     connecting()
         //clamp setup 
-        del=500
-        dur=200
-        access SAC[0].soma
-        clamps[0]=new VClamp(.5)
-        clamps[0].dur[0]=tstop
-        clamps[0].amp[0]=0
-
-        access SAC[1].soma
-        clamps[1]=new VClamp(.5)
-        clamps[1].dur[0]=del
-        clamps[1].amp[0]=-70
-        clamps[1].dur[1]=dur
-        clamps[1].dur[2]=tstop-del-dur
-        clamps[1].amp[2]=-70
+        
+        if(network){
+            print "network"
+            numneighbors=0
+            while (numneighbors<50){
+                whichSAC=randSACs.repick()
+                numneighbors=SAC[whichSAC].receivesCl.count()
+                print "attempt"
+            }
+            randCon.uniform(0,SAC[whichSAC].fromList.count-1)
+            iinput=randCon.repick()
+            neighborSAC=SAC[whichSAC].fromList.object(iinput).x[0]
+        
+            connectcount=0
+            for i=0, SAC[whichSAC].fromList.count-1{
+                if(SAC[whichSAC].fromList.object(i).x[0]==neighborSAC){
+                    connectcount=connectcount+1
+                }
+            }
+            print "how many inputs this SAC receives from neighbor SAC ", connectcount
+            firstSAC=whichSAC
+            secondSAC=neighborSAC  //which SAC is the one we observe. neighbor SAC is the one with the voltage changes
+        }else{      
+            firstSAC=0
+            secondSAC=1
+        }
+        
+        clampsetup(firstSAC,secondSAC)
 
         clampcurrent.record(&clamps[0].i,1) //record from postsyn soma
         if(takingtrace){
-            a=0                         //cd synapse onto ab
-            b=0
+            a=firstSAC                        //cd synapse onto ab
+            if(network){
+                b=iinput
+            }else{
+                b=0
+            }
             c=SAC[a].fromList.object[b].x[0]
             d=SAC[a].fromList.object[b].x[1]
-            testg.record(&SAC[a].receivesCl.object(b).probrelease,1)
+            testg.record(&SAC[a].receivesCl.object(b).i,1)
+            //testg.record(&SAC[a].dend[42+b].v(.5),1)
             print "abcd", a, b, c, d
 
             testg2.record(&SAC[a].receivesCl.object(b).numreleased,1)
@@ -426,6 +492,7 @@ if(TwoSACLeeExperiment){
             graphG6()
             graphG7()
             graphG5()
+            graphG4()
             graphG9()
         }else{
             for i2=0, 9{              
@@ -444,11 +511,55 @@ if(TwoSACLeeExperiment){
        
     
 }
+if(TwoSACLeeExperimentSimple){
+    Simple[0]=new simple()
+    Simple[1]=new simple()
+    access Simple[1].soma
+    temp2=new ComplexCl2(.5) 
+    temp2.thres=clchannelthres
+    setpointer temp2.capre, Simple[0].soma.cai(.5)
+
+    del=500
+    dur=200
+    access Simple[1].soma
+    clamps[0]=new VClamp(.5)
+    clamps[0].dur[0]=tstop
+    clamps[0].amp[0]=0
+
+    access Simple[0].soma
+    clamps[1]=new VClamp(.5)
+    clamps[1].dur[0]=del
+    clamps[1].amp[0]=-70
+    clamps[1].dur[1]=dur
+    clamps[1].dur[2]=tstop-del-dur
+    clamps[1].amp[2]=-70
+
+
+    clampcurrent.record(&clamps[0].i,1) //record from postsyn soma
+    
+    for i2=0, 7{              
+            clamps[1].amp[1]=-65+10*i2
+            run()
+            voltagejumps.append(clamps[1].amp[1])
+            currentmaxs.append (clampcurrent.max(4, tstop)-clampcurrent.x[del/2])//(Simple[0].CAIrecList.object(0).max(4, tstop))
+            
+            }
+            fileob.wopen("TwoSACExperimentLeeImaxes.txt")
+            for i=0, currentmaxs.size()-1{
+                fileob.printf("%g %g \n", voltagejumps.x[i], currentmaxs.x[i])
+            }
+            fileob.close()
+
+            graphG5()
+            graphG4()
+
+}
+
 
 if (SingleSACDingExperiment){
-    takingtrace=0  //are we taking a trace
+    takingtrace=1  //are we taking a trace
     whichvar=65-numInside    // if so, of which varicosity
-    tracepd=0 //in the preferred direction or no?
+    tracepd=1 //in the preferred direction or no?
 
     build()
     savetrueangle()
@@ -503,9 +614,12 @@ if (SingleSACDingExperiment){
 }
 
 if(SingleSACExperiment){
+    expand=0
     build()
     delay()
     savevariangle()
+    fauxconnect()
+    testg2.record(&SAC[chosenSAC].fauxvari.object(0).numreleased,1)
 
     xopen("AlphaSyn3.ses")
 
@@ -514,49 +628,93 @@ if(SingleSACExperiment){
     run()
     //current trace graph
     graphG6()
-    fileob.wopen("SingleSACExperimentITrace.txt")
+    graphG7()
+    fileob.wopen("SingleSACExperimentITrace.txt") 
     for i=0, testg.size()-1{
         fileob.printf("%g \n", testg.x[i])
     }
     fileob.close()
 
-    //maxvoltage vs angle
-    chosenSAC=0
+    //maxcalcium vs angle
+    
     graphAngleCA()
     for w=0, SAC[chosenSAC].variAngle.size()-1{
-        num= SAC[chosenSAC].VrecList.object(w).max()
+        if(expand){
+            num=SAC[chosenSAC].fauxvaricurrent.object(w).max()
+        }else{
+            num= SAC[chosenSAC].CAIrecList.object(w).max()
+        }
         voltagevec.append(num)
     }
+
     fileob.wopen("SingleSACExperimentVvsAngle.txt")
+    fileob.printf("Maximum_Calcium_Concentration_Across_Angles \n")
+    fileob.printf("Angle Max_CAi \n")
     for i=0,SAC[chosenSAC].variAngle.size()-1{
         fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[i],voltagevec.x[i] )
     }
+    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0] )
+    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1] )
     fileob.close()
 
-    //Voltage Trace 
-    
-    chosenDend=73-numInside //43
+    Dend1=0
+    Dend2=70-numInside
 
-    fileob.wopen("SingleSACExperimentVTrace.txt")
-    for i=0, SAC[chosenSAC].VrecList.object(chosenDend).size()-2{
-        fileob.printf("%g  %g \n",timevec.x[i], SAC[chosenSAC].VrecList.object(chosenDend).x[i] )
+    
+    
+    fileob.wopen("SingleSACExperimentVTrace.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
+    for i=0, SAC[chosenSAC].VrecList.object(Dend1).size()-1{
+        if(expand){
+            fileob.printf("%g %g %g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i] , SAC[chosenSAC].fauxvarirelease.object(Dend1).x[i], SAC[chosenSAC].fauxvaricurrent.object(Dend1).x[i])
+            fileob.printf("%g %g %g %g %g\n", SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].CAIrecList.object(Dend2).x[i], SAC[chosenSAC].ICArecList.object(Dend2).x[i] , SAC[chosenSAC].fauxvarirelease.object(Dend2).x[i], SAC[chosenSAC].fauxvaricurrent.object(Dend2).x[i])
+        }else{
+            fileob.printf("%g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i] )
+            fileob.printf("%g %g %g\n", SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].CAIrecList.object(Dend2).x[i], SAC[chosenSAC].ICArecList.object(Dend2).x[i] )
+        }
     }
     fileob.close()
+    
 
-   
+    //Voltage Trace s
+    /*
+    Dend1=42-numInside
+    Dend2=51-numInside
+    Dend3=57-numInside
+    Dend4=63-numInside
+    Dend5=70-numInside
+    Dend6=76-numInside
+    Dend7=80-numInside
+    Dend8=88-numInside
+
+    fileob.wopen("SingleSACExperimentVTrace.txt")
+    fileob.printf("Calcium_Recordings_from_the_Varicosities_of_a_SAC_at_these_Dendrites %d %d %d %d %d %d %d %d \n", Dend1, Dend2, Dend3, Dend4, Dend5, Dend6, Dend7, Dend8)
+    fileob.printf("Angle_of_the_dendrites %g %g %g %g %g %g %g %g \n", SAC[chosenSAC].variAngle.x[Dend1], SAC[chosenSAC].variAngle.x[Dend2], SAC[chosenSAC].variAngle.x[Dend3], SAC[chosenSAC].variAngle.x[Dend4], SAC[chosenSAC].variAngle.x[Dend5], SAC[chosenSAC].variAngle.x[Dend6], SAC[chosenSAC].variAngle.x[Dend7], SAC[chosenSAC].variAngle.x[Dend8] )
+    for i=0, SAC[chosenSAC].CAIrecList.object(Dend1).size()-1{
+        fileob.printf(" %g %g %g %g %g %g %g %g \n", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].VrecList.object(Dend3).x[i], SAC[chosenSAC].VrecList.object(Dend4).x[i], SAC[chosenSAC].VrecList.object(Dend5).x[i], SAC[chosenSAC].VrecList.object(Dend6).x[i], SAC[chosenSAC].VrecList.object(Dend7).x[i], SAC[chosenSAC].VrecList.object(Dend8).x[i] )
+    }
+    fileob.close()
+    */
+
+   //timevec.x[i]
 }
 
 if (SingleSACVGCCExperiment){
     print"SingleSACVGCCExperiment"
+    simply=1
     ivsv=1
-    bottom=-60
-    inc=5
+    bottom=-90
+    inc=10
     vinquestion=-20
     vnum=(vinquestion-bottom)/inc
     tdel=100
     
-    build()
-    access SAC[0].soma
+    if(simply){
+        simplething=new simple()
+        access simplething.soma
+    }else{
+        build()
+        access SAC[0].dend[42]
+    }
     clamps[0]=new VClamp(.5)
         clamps[0].dur[0]=tdel
         clamps[0].dur[1]=100
@@ -566,9 +724,13 @@ if (SingleSACVGCCExperiment){
 
     temp=new Vector()
     if(ivsv){                           //--------------ivsv
-        for idend=0, SAC[i2].VrecList.count()-1{
-            access SAC[0].dend[42+idend]
+        if(simply){
             gbar_calrgc=0
+        }else{
+            for idend=0, SAC[i2].VrecList.count()-1{
+                access SAC[0].dend[42+idend]
+                gbar_calrgc=0
+            }
         }
         for i=1, top{
             clamps[0].amp[1]=bottom+inc*i
@@ -578,11 +740,15 @@ if (SingleSACVGCCExperiment){
             without[i-1].copy(temp2)
             
         }
-    
-        for idend=0, SAC[i2].VrecList.count()-1{
+        if(simply){
+            gbar_calrgc=cachannelg
+        }else{
+            for idend=0, SAC[i2].VrecList.count()-1{
             access SAC[0].dend[42+idend]
-            gbar_calrgc=.0005
+            gbar_calrgc=cachannelg
+            }
         }
+        
         temp=new Vector()
 
         for i=1, top{
@@ -612,7 +778,7 @@ if (SingleSACVGCCExperiment){
     }else{                                 //----------otherwise
         for idend=0, SAC[i2].VrecList.count()-1{
             access SAC[0].dend[42+idend]
-            gbar_calrgc=.0005
+            gbar_calrgc=cachannelg
         }
         temp=new Vector()
 

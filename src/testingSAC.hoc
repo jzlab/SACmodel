@@ -49,7 +49,7 @@ proc graphG5(){
     g5.label("g5")
     g5.beginline()
     for(t=0;t<tstop;t=t+1){
-        g5.line(t,SAC[c].ICArecList.object(d).get(t))
+        g5.line(t,Simple[0].CAIrecList.object(0).get(t))
     }
     g5.flush()
 }
@@ -59,7 +59,7 @@ proc graphG4(){
     g4.label("g4")
     g4.beginline()
     for(t=0;t<tstop;t=t+1){
-        g4.line(t,SAC[c].MrecList.object(d).get(t))
+        g4.line(t,Simple[1].ICArecList.object(0).get(t))
     }
     g4.flush()
 }
@@ -72,5 +72,4 @@ proc graphAngleCA(){
     }
     g.flush()
 }
-//--------------------------you might want this for a more detailed look at AngleCA
-//xopen ("AlphaSyn3.ses")
+
