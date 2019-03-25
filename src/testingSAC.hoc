@@ -1,46 +1,52 @@
 
 proc graphG6(){
       
-        g6.size(0,tstop,0,5.5)
+        //g6.size(0,tstop,0,5.5)
         g6.color(2)
         g6.label("g6")
         g6.beginline()
         for (t=1;t<tstop;t+=1){
             g6.line(t,testg.get(t) )
         }
+        g6.view(0,tstop,0,5.5,800,400,350,200)
         g6.flush()
 }
+
 proc graphG7(){
       
-        g7.size(0,tstop,-2,2)
+       // g7.size(0,tstop,-2,2)
         g7.color(4)
         g7.label("g7")
         g7.beginline()
         for (t=1;t<tstop;t+=1){
             g7.line(t,testg2.get(t) )
         }
+        g7.view(100,100,100,100,600,400,350,200)
         g7.flush()
 }
+
 proc graphG8(){
       
-        g8.size(0,tstop,-2,2)
+        //g8.size(0,tstop,-2,2)
         g8.color(5)
         g8.label("g8")
         g8.beginline()
         for (t=0;t<tstop;t+=1){
             g8.line(t,testg3.get(t) )
         }
+        g8.view(0,tstop,0,5.5,800,450,350,200)
         g8.flush()
 }
 proc graphG9(){
       
-        g9.size(0,tstop,-2,2)
+        //g9.size(0,tstop,-2,2)
         g9.color(6)
         g9.label("g9")
         g9.beginline()
         for (t=0;t<tstop;t+=1){
             g9.line(t,testg4.get(t) )
         }
+        g9.view(0,tstop,0,5.5,100,450,350,200)
         g9.flush()
 }
 proc graphG5(){
@@ -65,11 +71,20 @@ proc graphG4(){
 }
 proc graphAngleCA(){
 
-    g.size(-PI, PI, -45, 0)
+    g.size(-PI, PI, 0, 6)
     g.beginline()
     for(w=0; w<=SAC[chosenSAC].variAngle.size()-1; w+=1){
-        g.line(SAC[chosenSAC].variAngle.get(w), SAC[chosenSAC].VrecList.object(w).max())         
+        g.line(SAC[chosenSAC].variAngle.get(w), SAC[chosenSAC].CAIrecList.object(w).max())         
     }
     g.flush()
 }
 
+proc graphAngleV(){
+
+    g10.size(-PI, PI, -60, -10)
+    g10.beginline()
+    for(w=0; w<=SAC[chosenSAC].variAngle.size()-1; w+=1){
+        g10.line(SAC[chosenSAC].variAngle.get(w), SAC[chosenSAC].VrecList.object(w).max())         
+    }
+    g10.flush()
+}

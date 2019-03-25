@@ -100,6 +100,8 @@ for i2=0, numSACs-1{     //switch back //numSACs-1
                             
                             if(((dendx-x)^2 + (dendy-y)^2)< SACmaxDist^2){           //we're close enough to the dend
                                 temp=new ComplexCl2(.5) 
+                                temp.scaling=clchannelscaling
+                                temp.amp=clchannelamp
                                 temp.thres=clchannelthres
                                 setpointer temp.capre, SAC[i2].dend[numInside+ivari].cai(.8)
                                 SAC[iSAC].receivesCl.append (temp)                   //i2 provides the gaba isac receives it
@@ -156,7 +158,71 @@ proc clampsetup(){
     clamps[1].amp[2]=-70
 }
 
+proc update(){
+    clampingdend1=clampingdend
 
+    bipG1=expbipG1*expcontrast   
+    bipG2=expbipG2*expcontrast
 
+    for i=0,numSACs-1{
+        for ibipSyn=0, SAC[i].bipSynapses.count()-1{
+            SAC[i].bipSynapses.object(ibipSyn).g1max=bipG1
+            SAC[i].bipSynapses.object(ibipSyn).g2max=bipG2
+        }
+    }
 
+    forall {
+        e_pas=dendepas
+        g_pas=dendgpas	
+        gkbar_kv=kv_gmax	
+    }
+    for i=0,numSACs-1{
+        forsec SAC[i].EndDends{
+            shift_calrgc=cachannelshift
+            gbar_calrgc=cachannelg
+        }
+    }
+
+}
+
+proc vecupdate(){
+    objectvar temp
+    for i=0,numSACs-1{
+        forsec SAC[i].EndDends{
+            temp=new Vector()
+            temp.record(&m_calrgc(.8),1)
+            SAC[i].MrecList.append(temp)
+        }
+    }                     
+}
+
+proc procSimpleClamp(){
+
+    access SAC[0].soma
+    clamps[1]=new VClamp(.5)
+    clamps[1].dur[0]=tdel
+    clamps[1].dur[1]=tdur
+    clamps[1].dur[2]=tstop-tdel-tdur
+    clamps[1].amp[2]=bottom
+    clamps[1].amp[0]=bottom
+    clamps[1].amp[1]=destination
+    vecupdate()
+    testg3=SAC[chosenSAC]. MrecList().object(clampingdend1-42)
+    xopen("BuildGUI1.ses")
+    run()
+    graphG8()
+    
+
+} 
+
+proc CurrentvsContrast(){
+    fileob.wopen("CurrentvsContrast.txt")
+    fileob.printf("LCAI, LM, LV, RCAI, RM, RV \n")
+    for (expcontrast=.1; expcontrast<=.9; expcontrast+=.025){
+        update()
+        run()
+        fileob.printf("%g %g %g %g %g %g \n",SAC[0].CAIrecList().object(27).max(), SAC[0].MrecList().object(27).max(), SAC[0].VrecList().object(27).max(), SAC[0].CAIrecList().object(3).max(),SAC[0].MrecList().object(27).max(), SAC[0].VrecList().object(3).max())
+    }
+    fileob.close()
+}
 

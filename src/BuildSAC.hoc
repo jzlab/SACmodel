@@ -1,11 +1,12 @@
 begintemplate star
-    external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg
-    external bipDensity, bipMaxDist, nodends
-    public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
-    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg, numOutside
+    external bipDensity, bipMaxDist, nodends, VGKCMaxDistance, kv_gmax, kv_h_50, kv_n_50, kv_n_slope, kv_h_slope, kv_ntau_50
+    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas
+    public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
+    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends
     create soma, dend[2] 
-    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList
-    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent
+    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
+    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends
     
     proc Morph(){
         objectvar temp
@@ -41,6 +42,7 @@ begintemplate star
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
                     connect dend[idend*2+GenCount+numD_gen+1](0), dend[idend+GenCount](1)
                 }else{
+                    EndDends.append()
                     temp=new Vector()
                     temp.record(&v(0.8),1)
                     VrecList.append(temp)
@@ -54,9 +56,7 @@ begintemplate star
                         gbar_calrgc=cachannelg
                         temp.record (&ica(.8),1)
                         ICArecList.append(temp)
-                        temp=new Vector()
-                        temp.record(&test_calrgc(.8),1)
-                        MrecList.append(temp)
+
                         temp= new Vector()         
                         insert cadiff
                         temp.record (&cai(.8),1)
@@ -71,6 +71,31 @@ begintemplate star
            // rotate=-.5-(igen*(3/2))
             GenCount+=numD_gen
         }
+    }
+    proc placeVGKC(){
+        forall{
+                insert kv
+                //Kchannell info
+                gkbar_kv=kv_gmax
+                n_50_kv=kv_n_50
+                h_50_kv=kv_h_50
+                n_slope_kv=kv_n_slope
+                h_slope_kv=kv_h_slope
+                ntau_50_kv=kv_ntau_50
+                htau_50_kv=kv_htau_50
+                ntau_slope_kv=kv_ntau_slope
+                htau_slope_kv=kv_htau_slope
+                ntau_max_kv=kv_ntau_max
+                htau_max_kv=kv_htau_max
+                nN_kv=kv_nN
+            }
+            for iOut=0, numOutside-1{
+                access dend[iOut]
+                temp= new Vector()
+                temp.record(&ik(.8),1)
+                IKrecList.append(temp)
+            }
+         
     }
     proc placeBip(){
         objectvar temp
@@ -116,6 +141,7 @@ begintemplate star
         variAngle=new Vector()
         trueAngle= new Vector()
         ICArecList=new List()
+        IKrecList=new List()
         CAIrecList= new List()
         receivesCl= new List()
         fromList= new List()
@@ -123,6 +149,7 @@ begintemplate star
         fauxvari=new List()
         fauxvarirelease=new List()
         fauxvaricurrent=new List()
+        EndDends=new SectionList()
         gangConnects=new Vector(3)
         gangConnects.x[0]=0
         gangConnects.x[1]=0
@@ -135,22 +162,46 @@ begintemplate star
         Morph($1,$2)
         forall{
             insert pas
+            g_pas=dendgpas
+            e_pas=dendepas
         }
         access soma
         placeBip()
+        access soma
+        placeVGKC()
     }
 endtemplate star
 
 begintemplate fauxring
-    external numOutside, dendD0, dendL, numGen
+    external numOutside, dendD0, dendL, numGen, dendgpas, dendepas, kv_gmax, kv_h_50, kv_n_50, kv_n_slope, kv_h_slope, kv_ntau_50
+    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN
     public dend
     create dend[2]
 
     proc init(){
         create dend[numOutside]
         for i=0, numOutside-1{
-            dend[i].diam=dendD0
-            dend[i].L=dendL/numGen
+            access dend[i]
+            diam=dendD0
+            L=dendL/numGen
+            insert pas
+            g_pas=dendgpas
+            e_pas=dendepas
+
+            insert kv
+            //Kchannell info
+            gkbar_kv=kv_gmax
+            n_50_kv=kv_n_50
+            h_50_kv=kv_h_50
+            n_slope_kv=kv_n_slope
+            h_slope_kv=kv_h_slope
+            ntau_50_kv=kv_ntau_50
+            htau_50_kv=kv_htau_50
+            ntau_slope_kv=kv_ntau_slope
+            htau_slope_kv=kv_htau_slope
+            ntau_max_kv=kv_ntau_max
+            htau_max_kv=kv_htau_max
+            nN_kv=kv_nN
         }
     }
 
