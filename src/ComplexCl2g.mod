@@ -3,7 +3,7 @@
 NEURON{
     POINT_PROCESS ComplexCl2g
     NONSPECIFIC_CURRENT i
-    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease
+    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp
     POINTER capre
 }
 
@@ -13,10 +13,11 @@ PARAMETER{
     e=-65
     capre=0
     ca_baseline=.0001
-    thres=.0005          :1.4715
+    thres=.0000          :1.4715
     amp=.09
     numves= 5 (integer)
     regentime=900: 300
+    scaling=800:.000005
 }
 ASSIGNED{
 	v (millivolt)
@@ -69,6 +70,7 @@ INITIAL{
             l=0
             while(l<numves){
                 thyme[l]=num
+
                 l=l+1
             }
         }
@@ -121,7 +123,7 @@ FUNCTION getnumreleased(capre1,t2){
     
         if(capre1>thres){
             
-            probrelease=(capre1*capre1*capre1*capre1)/20
+            probrelease=(capre1*capre1*capre1*capre1)/scaling
             :probrelease= (capre1-thres)*tan(1.52)
         }else{
             probrelease=0

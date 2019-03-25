@@ -12,7 +12,7 @@ NEURON {
 }
 
 PARAMETER {
-	gbar = .0005   	(mho/cm2)	
+	gbar = .01   	(mho/cm2)	
 	shift= 20	
 			
 	eca	=100	(mV)            : must be explicitly def. in hoc
@@ -46,22 +46,26 @@ BREAKPOINT {
 } 
 
 INITIAL {
-	trates(v+shift)
+	trates(v)
 	m=minf  
 }
 
 DERIVATIVE states {   
-        trates(v+shift)      
+        trates(v)        :possible shift
         m' = (minf-m)/mtau
 }
 
 PROCEDURE trates(vm) {  
         
 
-	a = trap0(vm,2,0.061,12.5)
-	b = 0.058*exp(-(vm-10)/4)
+	:a = trap0(vm,2,0.061,12.5)
+	:b = 0.058*exp(-(vm-10)/4)
+	a = trap0(vm+shift,3,0.061,12.5)
+	b = 0.058*exp(-(vm+shift-10)/15)
 	minf = a/(a+b)
 	mtau = 1/(a+b)
+	
+	
 
 }
 
