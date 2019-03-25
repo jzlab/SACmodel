@@ -1,0 +1,211 @@
+{load_file("nrngui.hoc")}
+objectvar save_window_, rvp_
+objectvar scene_vector_[12]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(0,0,0)}
+/*
+{
+save_window_ = new Graph(0)
+save_window_.size(25,275,16.6667,183.333)
+scene_vector_[2] = save_window_
+{save_window_.view(25, 16.6667, 250, 166.667, 0, 1, 300.48, 200.32)}
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(25,275,16.6667,183.333)
+scene_vector_[3] = save_window_
+{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(25,275,16.6667,183.333)
+scene_vector_[4] = save_window_
+{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(25,275,16.6667,183.333)
+scene_vector_[5] = save_window_
+{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
+save_window_.label(0, 1, "g7", 2, 1, 0, 1, 1)
+save_window_.addexpr("testg3.get(t)", 5, 1, 0, 1, 2)
+save_window_.addexpr("testg.get(t)", 2, 1, 0, 1, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,800,-2,2)
+scene_vector_[6] = save_window_
+{save_window_.view(0, -2, 800, 4, 3, 47, 300.48, 200.32)}
+save_window_.label(0.8, 0.9, "g8", 2, 1, 0, 1, 5)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(25,275,16.6667,183.333)
+scene_vector_[7] = save_window_
+{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(-3.14159,3.14159,-5.96046e-08,6)
+scene_vector_[8] = save_window_
+{save_window_.view(-3.14159, -5.96046e-08, 6.28319, 6, 3, 47, 300.48, 200.32)}
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(-3.14159,3.14159,-60,-10)
+scene_vector_[9] = save_window_
+{save_window_.view(-3.14159, -60, 6.28319, 50, 3, 47, 300.48, 200.32)}
+}
+*/
+{
+xpanel("Params", 0)
+expcontrast = 0.3
+xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
+bipG1 = 0.3
+xvalue("bipG1","bipG1", 0,"", 0, 0 )
+bipG2 = 0.06
+xvalue("bipG2","bipG2", 0,"", 0, 0 )
+dendepas = -60
+xvalue("E pas","dendepas", 1,"update()", 0, 0 )
+dendgpas = 0.0008
+xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
+cachannelshift = 10
+xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
+cachannelg = 0.002
+xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
+kv_gmax = 0
+xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
+xpanel(400,400)
+}
+/*
+{
+save_window_ = new Graph(0)
+save_window_.size(0,800,-2,2)
+scene_vector_[10] = save_window_
+{save_window_.view(0, -2, 800, 4, 3, 47, 300.48, 200.32)}
+save_window_.label(0.8, 0.9, "g7", 2, 1, 0, 1, 4)
+}
+*/
+{
+xpanel("Params", 0)
+expcontrast = 0.3
+xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
+bipG1 = 0.3
+xvalue("bipG1","bipG1", 0,"", 0, 0 )
+bipG2 = 0.06
+xvalue("bipG2","bipG2", 0,"", 0, 0 )
+dendepas = -60
+xvalue("E pas","dendepas", 1,"update()", 0, 0 )
+dendgpas = 0.0008
+xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
+cachannelshift = 10
+xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
+cachannelg = 0.002
+xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
+kv_gmax = 0
+xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
+xpanel(400,400)
+}
+{
+xpanel("Params", 0)
+expcontrast = 0.3
+xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
+bipG1 = 0.3
+xvalue("bipG1","bipG1", 0,"", 0, 0 )
+bipG2 = 0.06
+xvalue("bipG2","bipG2", 0,"", 0, 0 )
+dendepas = -60
+xvalue("E pas","dendepas", 1,"update()", 0, 0 )
+dendgpas = 0.0008
+xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
+cachannelshift = 10
+xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
+cachannelg = 0.002
+xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
+kv_gmax = 0
+xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
+xpanel(400,400)
+}
+
+{
+save_window_ = new Graph(0)
+save_window_.size(0,500,-70,0)
+scene_vector_[11] = save_window_
+{save_window_.view(0, -70, 500, 70, 652, 3, 729.6, 275.2)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("SAC[0].dend[69].v(.8)", 2, 1, 0.151316, 0.875581, 2)
+save_window_.addexpr("SAC[0].dend[45].v(.8)", 1, 1, 0.730263, 0.924419, 2)
+}
+
+
+{
+save_window_ = new Graph(0)
+save_window_.size(0,500,-70,0)
+scene_vector_[11] = save_window_
+{save_window_.view(0, -70, 500, 70, 652, 3, 729.6, 275.2)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("SAC[0].dend[69].ica(.8)", 2, 1, 0.151316, 0.875581, 2)
+save_window_.addexpr("SAC[0].dend[45].ica(.8)", 1, 1, 0.730263, 0.924419, 2)
+}
+{
+xpanel("star[0].dend[42](0 - 1) (Parameters)", 0)
+xlabel("star[0].dend[42](0 - 1) (Parameters)")
+xlabel("nseg = 5")
+SAC[0].dend[42].L = 35.386
+xvalue("L","SAC[0].dend[42].L", 1,"define_shape()", 0, 0 )
+SAC[0].dend[42].Ra = 35.4
+xvalue("Ra","SAC[0].dend[42].Ra", 1,"SAC[0].dend[42].Ra += 0", 0, 1 )
+SAC[0].dend[42].cm = 1
+xvalue("cm","SAC[0].dend[42].cm", 1,"", 0, 0 )
+SAC[0].dend[42].diam = 0.425
+xvalue("diam","SAC[0].dend[42].diam", 1,"", 0, 0 )
+SAC[0].dend[42].gbar_calrgc = 0.002
+xvalue("gbar_calrgc","SAC[0].dend[42].gbar_calrgc", 1,"", 0, 0 )
+SAC[0].dend[42].shift_calrgc = 10
+xvalue("shift_calrgc","SAC[0].dend[42].shift_calrgc", 1,"", 0, 0 )
+SAC[0].dend[42].g_pas = 0.0008
+xvalue("g_pas","SAC[0].dend[42].g_pas", 1,"", 0, 0 )
+SAC[0].dend[42].e_pas = -60
+xvalue("e_pas","SAC[0].dend[42].e_pas", 1,"", 0, 0 )
+SAC[0].dend[42].gkbar_kv = 0
+xvalue("gkbar_kv","SAC[0].dend[42].gkbar_kv", 1,"", 0, 0 )
+SAC[0].dend[42].ek = -77
+xvalue("ek","SAC[0].dend[42].ek", 1,"", 0, 0 )
+xpanel(72,401)
+}
+{
+xpanel("RunControl", 0)
+v_init = -65
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 800
+xvalue("t","t", 2 )
+tstop = 800
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 0.025
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 40
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+screen_update_invl = 0.05
+xvalue("Scrn update invl","screen_update_invl", 1,"", 0, 1 )
+realtime = 7.22
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+xpanel(30,47)
+}
+/*
+save_window_ = scene_vector_[6]
+{save_window_.view(0, 0, 800, 0.21, 1088, 383, 350.4, 200.32)}
+save_window_ = scene_vector_[5]
+{save_window_.view(0, 0.01, 800, 0.31, 664, 385, 350.4, 200.32)}
+objectvar scene_vector_[1]
+{doNotify()}
+*/
