@@ -12,7 +12,7 @@ echo "Compiling model files..."
 nrnivmodl
 
 echo "Running Experiment..."
-nrngui MainA.hoc
+nrngui -nogui MainA.hoc
 
 echo "Moving output files to $EXP_OUTPUT_DIR"
 mv SingleSACExperimentVvsAngle.txt $EXP_OUTPUT_DIR/
