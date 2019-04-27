@@ -17,7 +17,8 @@ PARAMETER{
     amp=.09
     numves= 5 (integer)
     regentime=900: 300
-    scaling=800:.000005
+    scaling=1:.000005
+    
 }
 ASSIGNED{
 	v (millivolt)
@@ -82,12 +83,14 @@ BREAKPOINT{
         A=A+numreleased*amp
         B=B+numreleased*amp
         t1=t1+1
+    }
+
         :test=gettest()
     
     
         g=A-B
-        i = (1e-3)*g * (v - e)
-    }
+        i = (1e-3)*g * (v - e) *scaling 
+    
 }   
 DERIVATIVE state {
 	A'=-A/tau1

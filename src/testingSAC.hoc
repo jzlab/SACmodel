@@ -71,7 +71,7 @@ proc graphG4(){
 }
 proc graphAngleCA(){
 
-    g.size(-PI, PI, 0, 6)
+    g.size(-PI, PI, 0, 2)
     g.beginline()
     for(w=0; w<=SAC[chosenSAC].variAngle.size()-1; w+=1){
         g.line(SAC[chosenSAC].variAngle.get(w), SAC[chosenSAC].CAIrecList.object(w).max())         

@@ -1,7 +1,7 @@
 begintemplate star
     external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg, numOutside
     external bipDensity, bipMaxDist, nodends, VGKCMaxDistance, kv_gmax, kv_h_50, kv_n_50, kv_n_slope, kv_h_slope, kv_ntau_50
-    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas
+    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas, dendRa
     public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
     public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends
     create soma, dend[2] 
@@ -104,6 +104,7 @@ begintemplate star
         
         for idend=0, numDend-1{
             access dend[idend]
+            Ra=dendRa
             numSyn=int(L/bipDensity)
             for iS_D=0, numSyn-1{
                 loc=(iS_D+1)/(numSyn+1)
@@ -259,13 +260,14 @@ endtemplate ganglion
 
 begintemplate simple
 external cachannelshift, cachannelg
-public soma, receivesCl, ICArecList, CAIrecList
-objectvar receivesCl, ICArecList, temp, CAIrecList
+public soma, receivesCl, ICArecList, CAIrecList, VrecList
+objectvar receivesCl, ICArecList, temp, CAIrecList, VrecList
 create soma
 proc init(){
     receivesCl=new List()
     ICArecList=new List()
     CAIrecList=new List()
+    VrecList=new List()
     create soma
     access soma
     insert calrgc
@@ -274,6 +276,9 @@ proc init(){
     temp= new Vector()
     temp.record (&ica(.5),1)
     ICArecList.append(temp)
+    temp=new Vector()
+    temp.record(&v(0.5),1)
+    VrecList.append(temp)
     temp= new Vector()         
     insert cadiff
     temp.record (&cai(.5),1)

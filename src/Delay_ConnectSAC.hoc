@@ -2,6 +2,11 @@
 proc build(){
     for i=0,numSACs-1{
         SAC[i]=new star(Xorg.x[i],Yorg.x[i])
+
+    }
+}
+proc setg(){
+    for i=0,numSACs-1{
         if(nodends==0){
             for ibipSyn=0, SAC[i].bipSynapses.count()-1{
                 SAC[i].bipSynapses.object(ibipSyn).g1max=bipG1
