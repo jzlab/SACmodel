@@ -3,7 +3,7 @@
 NEURON{
     POINT_PROCESS ComplexCl2
     NONSPECIFIC_CURRENT i
-    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp
+    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau11, tau22
     POINTER capre
 }
 
@@ -21,6 +21,7 @@ PARAMETER{
     
 }
 ASSIGNED{
+
 	v (millivolt)
     i (nanoamp)
 	g

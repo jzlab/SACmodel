@@ -87,8 +87,8 @@ SimpleClamp=0
     }
     if(network2){
         ssdist=75
-        placementfreedom=1
-        griddim=2 //12
+        placementfreedom=.25
+        griddim=3 //12
         expnumSACs=griddim*griddim
     }
     //-----------------------------------BEGIN PARAMETERS
@@ -738,7 +738,7 @@ if(SingleSACExperiment){
     if (network1||network2){
         connecting()
         print " we have connected"
-        chosenSAC= 2  //or 56?
+        chosenSAC= 4  //or 56?//MAKE EQUATION
     }else{
         chosenSAC=0
     }
