@@ -4,9 +4,9 @@
 : modelDB accession 3457
 
 NEURON {
-	SUFFIX calrgc
+	SUFFIX calrgcMidLevel
 	USEION ca READ eca WRITE ica
-	RANGE  gbar, ica, shift, test, minf, mtau, a, b, m, translation
+	RANGE  gbar, ica, shift, test, minf, mtau, a, b, m
 	:GLOBAL minf, mtau
 	
 }
@@ -14,7 +14,6 @@ NEURON {
 PARAMETER {
 	gbar = .01   	(mho/cm2)	
 	shift= 20	
-	translation=0
 			
 	eca	=100	(mV)            : must be explicitly def. in hoc
 }
@@ -43,26 +42,24 @@ STATE { m }
 BREAKPOINT {
         SOLVE states METHOD cnexp
 	test=v-eca
-	ica = gbar*m*m*((v +translation - eca))
+	ica = gbar*m*m*((v - eca))
 } 
 
 INITIAL {
-	trates(v)
+	trates(v+shift)
 	m=minf  
 }
 
 DERIVATIVE states {   
-        trates(v)        :possible shift
+        trates(v+shift)      
         m' = (minf-m)/mtau
 }
 
 PROCEDURE trates(vm) {  
         
 
-	:a = trap0(vm,2,0.061,12.5)
-	:b = 0.058*exp(-(vm-10)/4)
-	a = trap0(vm+shift,3,0.061,12.5)
-	b = 0.058*exp(-(vm+shift-10)/14)
+	a = trap0(vm,2,0.061,12.5)
+	b = 0.058*exp(-(vm-10)/15)
 	minf = a/(a+b)
 	mtau = 1/(a+b)
 	

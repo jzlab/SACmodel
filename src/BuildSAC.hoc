@@ -1,11 +1,11 @@
 begintemplate star
     external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg, numOutside
     external bipDensity, bipMaxDist, nodends, VGKCMaxDistance, kv_gmax, kv_h_50, kv_n_50, kv_n_slope, kv_h_slope, kv_ntau_50
-    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas, dendRa
+    external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas, dendRa, cachanneltranslation
     public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
-    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends
+    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends, V2recList, ICA2recList
     create soma, dend[2] 
-    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
+    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList, V2recList, ICA2recList
     objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends
     
     proc Morph(){
@@ -13,7 +13,8 @@ begintemplate star
         for idend=0, numFirst-1 {
             connect dend[idend](0),soma(0)
             access dend[idend]
-            pt3dadd($1,$2,0,dendD0)      
+            pt3dadd($1,$2,0,dendD0)  
+
         }
        
         for igen=0, numGen-1 {
@@ -37,6 +38,9 @@ begintemplate star
                     access dend[idend*2+GenCount+numD_gen]
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
                     connect dend[idend*2+GenCount+numD_gen](0), dend[idend+GenCount](1)
+                    temp=new Vector()
+                    temp.record(&v(0.5),1)
+                    V2recList.append(temp)    
                     
                     access dend[idend*2+GenCount+numD_gen+1]
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
@@ -53,6 +57,7 @@ begintemplate star
                         temp=new Vector()           //voltage to current to concentration
                         insert calrgc
                         shift_calrgc=cachannelshift
+                        translation_calrgc=cachanneltranslation
                         gbar_calrgc=cachannelg
                         temp.record (&ica(.8),1)
                         ICArecList.append(temp)
@@ -135,6 +140,8 @@ begintemplate star
         create dend[numDend]
         
         VrecList=new List()
+        V2recList=new List()
+        ICA2recList=new List()
         InnerXpos= new Vector()
         InnerYpos= new Vector()
         VrecXpos=new Vector()

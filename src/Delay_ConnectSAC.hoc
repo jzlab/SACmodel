@@ -6,11 +6,18 @@ proc build(){
     }
 }
 proc setg(){
+    if (expbipG1==0||expcontrast==0||expbipG2==0){
+        bipG1=0
+        bipG2=0
+    }else{
+        bipG1=expbipG1*expcontrast    
+        bipG2=expbipG2*expcontrast
+    }
     for i=0,numSACs-1{
         if(nodends==0){
             for ibipSyn=0, SAC[i].bipSynapses.count()-1{
-                SAC[i].bipSynapses.object(ibipSyn).g1max=bipG1
-                SAC[i].bipSynapses.object(ibipSyn).g2max=bipG2
+                    SAC[i].bipSynapses.object(ibipSyn).g1max=bipG1
+                    SAC[i].bipSynapses.object(ibipSyn).g2max=bipG2
 
             }
         }
@@ -22,7 +29,7 @@ proc delay(){
         for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
             x=SAC[i].bipSynapses.object(ibipSyn).locx
             y=SAC[i].bipSynapses.object(ibipSyn).locy
-            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))/bipspeed +50+dendL
+            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))*bipspeed +50+dendL
 
         }
     }
@@ -108,11 +115,15 @@ for i2=0, numSACs-1{     //switch back //numSACs-1
                                 temp.scaling=clchannelscaling
                                 temp.amp=clchannelamp
                                 temp.thres=clchannelthres
+                                temp.tau1=clchanneltau1
+                                temp.tau2=clchanneltau2
+                                temp.g=cachannelg
                                 setpointer temp.capre, SAC[i2].dend[numInside+ivari].cai(.8)
                                 SAC[iSAC].receivesCl.append (temp)                   //i2 provides the gaba isac receives it
-                                temp= new Vector(2)
-                                temp.x[0]=i2
-                                temp.x[1]=ivari
+                                temp= new Vector(3)
+                                temp.x[0]=i2 //SAC they're from
+                                temp.x[1]=ivari //outerdend they're from
+                                temp.x[2]=idend //which dend they synapse onto
                                 SAC[iSAC].fromList.append(temp)
                     
                             }
@@ -161,6 +172,19 @@ proc clampsetup(){
     clamps[1].dur[1]=dur
     clamps[1].dur[2]=tstop-del-dur
     clamps[1].amp[2]=-70
+}
+
+proc belongstobranch(){
+    n= int($1/2)
+    gate= $2*8+6*7
+    for (i=3; i>=0; i=i-1){
+        if((n-gate>-1)&&((n-gate)< (2^(i)))){
+            belongs=1
+            break
+        }
+        gate=gate-(6*2^(i-1))-($2*2^(i-1))
+    }
+    return
 }
 
 proc update(){
@@ -231,3 +255,11 @@ proc CurrentvsContrast(){
     fileob.close()
 }
 
+proc Ggraph(){
+    IBIPrecList.object($1*2).plot(g12)
+    IBIPrecList.object($1*2 +1).plot(g12)
+}
+proc Ggraphc(){
+    IBIPrecList.object($1*2).plot(g12,6,1)
+    IBIPrecList.object($1*2 +1).plot(g12,6,1)
+}

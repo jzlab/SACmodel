@@ -49,6 +49,18 @@ proc graphG9(){
         g9.view(0,tstop,0,5.5,100,450,350,200)
         g9.flush()
 }
+proc graphG10(){
+      
+        //g9.size(0,tstop,-2,2)
+        g10.color(6)
+        g10.label("g10")
+        g10.beginline()
+        for (t=0;t<tstop;t+=1){
+            g9.line(t,testg5.get(t) )
+        }
+        g10.view(0,tstop,0,5.5,100,450,350,200)
+        g10.flush()
+}
 proc graphG5(){
     g5.size(0,tstop,0,1.5)
     g5.color(3)
@@ -76,6 +88,7 @@ proc graphAngleCA(){
     for(w=0; w<=SAC[chosenSAC].variAngle.size()-1; w+=1){
         g.line(SAC[chosenSAC].variAngle.get(w), SAC[chosenSAC].CAIrecList.object(w).max())         
     }
+    g.view(-PI,0,2*PI,3,150,50,350,200)
     g.flush()
 }
 

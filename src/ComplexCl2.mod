@@ -3,13 +3,13 @@
 NEURON{
     POINT_PROCESS ComplexCl2
     NONSPECIFIC_CURRENT i
-    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau11, tau22
+    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau1, tau2
     POINTER capre
 }
 
 PARAMETER{
-    tau1=10:20
-    tau2=7:15
+    tau1
+    tau2
     e=-65
     capre=0
     ca_baseline=.0001
@@ -90,7 +90,7 @@ BREAKPOINT{
     
     
         g=A-B
-        i = (1e-3)*g * (v - e) *scaling 
+        i = (1e-3)*g * (v - e)  
     
 }   
 DERIVATIVE state {
@@ -127,7 +127,7 @@ FUNCTION getnumreleased(capre1,t2){
     
         if(capre1>thres){
             
-            probrelease=(capre1*capre1*capre1*capre1)/scaling
+            probrelease=(capre1*capre1*capre1)/scaling
             :probrelease= (capre1-thres)*tan(1.52)
         }else{
             probrelease=0
