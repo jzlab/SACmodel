@@ -10,7 +10,7 @@ expcontrast=.3
 nodends=0
 network1=0 //probably not
 network2=0
-DingNetwork=0
+DingNetwork=1
 expangle=0
 expbipspeed=.7
 expdendgpas=.0008//normally//.001 old//.0002 if it's a twosaclee
@@ -1001,6 +1001,13 @@ if(SingleSACExperiment){
     graphAngleCA()
     graphAngleV()
     print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
+    fileob.apoen("SingleSACExperimentSpeedsAndContrasts.txt")
+    if(DingNetwork==0){
+        fileob.printf("%g %g %g  \n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
+    }else{
+        fileob.printf("%g %g   %g\n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
+    }
+    filob.close()
     //testg3= SAC[chosenSAC].receivesCl.object(0).capre
     //testg4=SAC[chosenSAC].VrecList.object(Dend2)
     //graphG8()

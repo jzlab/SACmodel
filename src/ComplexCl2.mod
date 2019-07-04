@@ -127,8 +127,8 @@ FUNCTION getnumreleased(capre1,t2){
     
         if(capre1>thres){
             
-            probrelease=(capre1*capre1*capre1)/scaling
-            :probrelease= (capre1-thres)*tan(.349) : previously tan(1.52)
+            :probrelease=(capre1*capre1*capre1)/scaling
+            probrelease= (capre1-thres)*tan(.349) : previously tan(1.52)
         }else{
             probrelease=0
         }
