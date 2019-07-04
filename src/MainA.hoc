@@ -1007,7 +1007,7 @@ if(SingleSACExperiment){
     }else{
         fileob.printf("%g %g   %g\n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
     }
-    filob.close()
+    fileob.close()
     //testg3= SAC[chosenSAC].receivesCl.object(0).capre
     //testg4=SAC[chosenSAC].VrecList.object(Dend2)
     //graphG8()
