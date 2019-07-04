@@ -1001,7 +1001,7 @@ if(SingleSACExperiment){
     graphAngleCA()
     graphAngleV()
     print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
-    fileob.apoen("SingleSACExperimentSpeedsAndContrasts.txt")
+    fileob.aopen("SingleSACExperimentSpeedsAndContrasts.txt")
     if(DingNetwork==0){
         fileob.printf("%g %g %g  \n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
     }else{
