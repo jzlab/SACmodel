@@ -9,10 +9,10 @@ exptstop=1000
 expcontrast=.3
 nodends=0
 network1=0 //probably not
-network2=1
+network2=0
 DingNetwork=0
 expangle=0
-expbipspeed=.5
+expbipspeed=.7
 expdendgpas=.0008//normally//.001 old//.0002 if it's a twosaclee
 
 
@@ -33,13 +33,13 @@ SimpleClamp=0
 
     if (GanglionExperiment){ 
         expangle=0
-        expcontrast=.6
+        expcontrast=.8
         
     }
     if (SingleSACExperiment){
         expnumSACs=1
         exptstop=800
-        expcontrast=.5
+        expcontrast=.8
         
     }
     if(TwoSACLeeExperiment){
@@ -132,14 +132,14 @@ SimpleClamp=0
         thetas.x[i]=expangle
     }
     SACmaxDist=15
-    clchannelthres=0//.008
+    clchannelthres=.2//.008
     clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
     clchannelamp=.9//.09
     clchanneltau1=10
     clchanneltau2=3
     clchannelgbar=100
-    cachannelshift=20//10
-    cachannelg=.002//.005
+    cachannelshift=15//10
+    cachannelg=.0029//.005
     cachanneltranslation=0
      //makes the i for -40 look like the i for -50
     //K Channel
@@ -999,6 +999,7 @@ if(SingleSACExperiment){
     Dend2=3 //RIGHT
 
     graphAngleCA()
+    graphAngleV()
     print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
     //testg3= SAC[chosenSAC].receivesCl.object(0).capre
     //testg4=SAC[chosenSAC].VrecList.object(Dend2)
@@ -1042,21 +1043,49 @@ if(SingleSACExperiment){
         fileob.printf("t space sac/bip g \n")
         for j=0, ISACLrecList.count()-1{
             for i=0,tstop-1{
-                fileob.printf("%g %g sac %g\n",i ,ISACLpos, ISACLrecList.object(j).x[i] )
+                if(ISACLrecList.object(j).x[i]==0){
+                    fileob.printf("%g %g sac  \n",i ,ISACLpos-Xorg.x[chosenSAC])
+                }else{
+                    fileob.printf("%g %g sac %g\n",i ,ISACLpos-Xorg.x[chosenSAC], ISACLrecList.object(j).x[i] )
+                }
             }
         }
         for j=0, ISACRrecList.count()-1{
             for i=0,tstop-1{
-                fileob.printf("%g %g sac %g\n",i ,ISACRpos, ISACRrecList.object(j).x[i] )
+                if(ISACRrecList.object(j).x[i]==0){
+                    fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
+                }else{
+                    fileob.printf("%g %g sac %g\n",i ,ISACRpos-Xorg.x[chosenSAC], ISACRrecList.object(j).x[i] )
+                }
             }
         }
         for l=0, whichbip.size()-1{
             j=whichbip.x[l]
             for i=0,tstop-1{
-                fileob.printf("%g %g bip %g\n",i ,SAC[chosenSAC].bipSynapses.object(j).locx,  IBIPrecList.object(j).x[i] )
+                if(IBIPrecList.object(j).x[i] ==0 ){
+                    fileob.printf("%g %g bip  \n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC] )
+                }else{
+                    fileob.printf("%g %g bip %g\n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC],  IBIPrecList.object(j).x[i] )
+                }
             }
         }
+        //left cai
+        access SAC[chosenSAC].dend[Dend1+numInside]
+        for i=0, tstop-1{  
+            if(SAC[chosenSAC].CAIrecList.object(Dend1).x[i]!=0){
+                fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(Dend1).x[i] )
+            }
+        }
+        //right cai
+        access SAC[chosenSAC].dend[Dend2+numInside]
+        for i=0, tstop-1{
+            if( SAC[chosenSAC].CAIrecList.object(Dend2).x[i] !=0){
+                fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(Dend2).x[i] )
+            }
+            
+        }
         fileob.close()
+        
     }
     
     fileob.wopen("SingleSACExperimentVTrace.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
@@ -1146,7 +1175,7 @@ if (SingleSACVGCCExperiment){
     simply=0
     chosendend=0
     ivsv=1
-    bottom=-30
+    bottom=-50
     inc=10
     vinquestion=bottom+inc  //If you are writting to Itrace this needs to have been included
     vnum=(vinquestion-bottom)/inc
