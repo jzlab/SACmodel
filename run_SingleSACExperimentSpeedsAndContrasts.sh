@@ -15,12 +15,14 @@ do
     for j in {.5..1.2...1}
     do
         for k in {0..1}
+        do
             DingNetwork=k
             expbipspeed=i
             expcontrast=j
 
             echo "Running Experiment..."
             nrngui -nogui MainA.hoc
+        done
     done
 done
 
