@@ -8,4 +8,4 @@ echo "Compiling model files..."
 nrnivmodl
 
 echo "Running Experiment..."
-nrngui MainA.hoc
+nrngui batch=0 MainA.hoc

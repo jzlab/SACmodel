@@ -765,8 +765,7 @@ if(SingleSACExperiment){
         expcontrast=.5
     }else{
         Sim_Exp_Num=10
-        expbipspeed=.7
-        expcontrast=.7
+
     }
 
     build()
