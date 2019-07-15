@@ -1,1 +1,1 @@
-nrngui batch=0 mainA.hoc
+nrngui  mainA.hoc
