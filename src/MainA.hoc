@@ -1,6 +1,17 @@
 //If you want to change an expvariable, then it will change it for the experiment
 //If you want to change a variable that is set by an expvariable, then all the experiments will be untouched and you will just change the baseline
 //If you change a variable that the experiments don't set, you change it for everything so be careful
+GanglionExperiment=0
+SingleSACExperiment=1
+SingleSACDSIvsContrast=0
+SingleSACExperiment1=0
+SingleSACDingExperiment=0
+TwoSACLeeExperiment=0
+TwoSACLeeExperimentSimple=0
+clchannelcheck=0
+SingleSACVGCCExperiment=0
+ThreeSACVGCCcheck=0
+SimpleClamp=0
 
 expnumSACs=1              
 expbipG1=1
@@ -16,240 +27,226 @@ expbipspeed=.7
 expdendgpas=.0008//normally//.001 old//.0002 if it's a twosaclee
 
 
-GanglionExperiment=0
-SingleSACExperiment=1
-SingleSACDSIvsContrast=0
-SingleSACExperiment1=0
-SingleSACDingExperiment=0
-TwoSACLeeExperiment=0
-TwoSACLeeExperimentSimple=0
-clchannelcheck=0
-SingleSACVGCCExperiment=0
-ThreeSACVGCCcheck=0
-SimpleClamp=0
-
-
-
-
-    if (GanglionExperiment){ 
-        expangle=0
-        expcontrast=.8
-        
-    }
-    if (SingleSACExperiment){
-        expnumSACs=1
-        exptstop=800
-        expcontrast=.8
-        
-    }
-    if(TwoSACLeeExperiment){
-        expnumSACs=2
-        expcontrast=0
-        exptstop=1500
-        expdendgpas=.0002//
-        
-
-    }
-
-    if (SingleSACDingExperiment){
-        expnumSACs=1
-        exptstop=800
-        expcontrast=.5
-    }
-    if(ThreeSACVGCCcheck){
-        expnumSACs=3
-        expcontrast=.36
-    }
+if (GanglionExperiment){ 
+    expangle=0
+    expcontrast=.8
     
-    if(clchannelcheck){
-        expnumSACs=2
-        exptstop=1500
-    }
-    if (SingleSACVGCCExperiment){
-        exptstop=300
-        expbipG1=0
-        expbipG2=0
-        expnumSACs=1
-
-    }
-    if(SimpleClamp){
-        exptstop=300
-        expbipG1=0
-        expbipG2=0
-        expnumSACs=1
-        clampingdend=69
-        clampingdend1=clampingdend
-    }
-
-    if(network1){    
-        ssdist=60
-        griddim=300/ssdist +5
-        //expnumSACs=1
-        expnumSACs=griddim*griddim
-    }
-    if(network2){
-        ssdist=75
-        placementfreedom=.25
-        griddim=3
-        expnumSACs=griddim*griddim
-    }
-    if(DingNetwork){
-        expnumSACs=7
-    }
-    //-----------------------------------BEGIN PARAMETERS
-    tstop=exptstop
-    //SAC cell morphology
-    numGen=4
-    numFirst=6
-    numDend=0
-    numInner=0
-    somaL=10
-    dendD0=.5
-    dendL=140
-    dendD1=0.2
-    dendgpas=expdendgpas
-    dendepas=-60//-70//
-    dendRa=100
-
-    for igen=0,numGen-1{
-    numDend+=numFirst*2^(igen)
-    }
-    numOutside=numFirst*2^(numGen-1)
-    numInside=numDend-numOutside
-
-    //bip placement
-    amountoflowcontrast=1
-    bipDensity=15
-    bipMaxDist=75
-
-    bipspeed=expbipspeed
+}
+if (SingleSACExperiment){
+    expnumSACs=1
+    exptstop=800
+    expcontrast=.8
     
-    //SAC building
-    objectvar thetas
+}
+if(TwoSACLeeExperiment){
+    expnumSACs=2
+    expcontrast=0
+    exptstop=1500
+    expdendgpas=.0002//
+    
+
+}
+
+if (SingleSACDingExperiment){
+    expnumSACs=1
+    exptstop=800
+    expcontrast=.5
+}
+if(ThreeSACVGCCcheck){
+    expnumSACs=3
+    expcontrast=.36
+}
+
+if(clchannelcheck){
+    expnumSACs=2
+    exptstop=1500
+}
+if (SingleSACVGCCExperiment){
+    exptstop=300
+    expbipG1=0
+    expbipG2=0
+    expnumSACs=1
+
+}
+if(SimpleClamp){
+    exptstop=300
+    expbipG1=0
+    expbipG2=0
+    expnumSACs=1
+    clampingdend=69
+    clampingdend1=clampingdend
+}
+
+if(network1){    
+    ssdist=60
+    griddim=300/ssdist +5
+    //expnumSACs=1
+    expnumSACs=griddim*griddim
+}
+if(network2){
+    ssdist=75
+    placementfreedom=.25
+    griddim=3
+    expnumSACs=griddim*griddim
+}
+if(DingNetwork){
+    expnumSACs=7
+}
+//-----------------------------------BEGIN PARAMETERS
+tstop=exptstop
+//SAC cell morphology
+numGen=4
+numFirst=6
+numDend=0
+numInner=0
+somaL=10
+dendD0=.5
+dendL=140
+dendD1=0.2
+dendgpas=expdendgpas
+dendepas=-60//-70//
+dendRa=100
+
+for igen=0,numGen-1{
+numDend+=numFirst*2^(igen)
+}
+numOutside=numFirst*2^(numGen-1)
+numInside=numDend-numOutside
+
+//bip placement
+amountoflowcontrast=1
+bipDensity=15
+bipMaxDist=75
+
+bipspeed=expbipspeed
+
+//SAC building
+objectvar thetas
+numSACs=expnumSACs
+thetas = new Vector(numSACs)
+for i=0,numSACs-1{
+    thetas.x[i]=expangle
+}
+SACmaxDist=15
+clchannelthres=.2//.008
+clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
+clchannelamp=.9//.09
+clchanneltau1=10
+clchanneltau2=3
+clchannelgbar=100
+cachannelshift=15//10
+cachannelg=.0029//.005
+cachanneltranslation=0
+    //makes the i for -40 look like the i for -50
+//K Channel
+kv_gmax=0//50
+kv_n_50=-20
+kv_n_slope=-.04
+n_base_kv=.1
+kv_h_50=-60
+kv_h_slope=.15
+h_base_kv=.05
+kv_ntau_50=-30
+kv_ntau_slope=0
+kv_ntau_max=1
+kv_htau_50=0
+kv_htau_slope=0
+kv_htau_max=10
+kv_nN=1
+kv_spread_min=0
+kv_spread_mas=200
+e_kv=-70
+VGKCMaxDistance=200
+
+
+objectvar Xorg, Yorg
+objectvar ranCord, freedom
+makepos=(griddim*ssdist/2) +50
+
+if(network1){
+    /*
+    Xorg= new Vector(numSACs,0)
+    Yorg= new Vector(numSACs,0)
+    Xorg.x[0]=60
+    Yorg.x[0]=60
+    */
+    /*
+    Xorg= new Vector(numSACs,0)
+    Yorg= new Vector()
+
+    for irow=0,griddim-1 {
+        for i=0,griddim-1{
+            Yorg.append(irow*ssdist)
+        }
+    }
+    for icol=0,griddim-1{
+        for i=0,griddim-1{
+        Xorg.x[icol+griddim*i]=(icol*ssdist)
+        }
+    }
+    likelySAC=.1
+    */
+    
+    ranCord=new Random()
+    ranCord.uniform(0,(griddim-1)*ssdist)
+
+    Xorg=new Vector(numSACs)
+    Yorg=new Vector(numSACs)
+    for i=0, numSACs-1{
+        Xorg.x[i]=ranCord.repick()
+        Yorg.x[i]=ranCord.repick()
+    }
+}else if(network2){
+    freedom= new Random()
+    freedom.uniform((-ssdist/2)*placementfreedom,(ssdist/2)*placementfreedom)
+    Xorg=new Vector(numSACs)
+    Yorg=new Vector(numSACs)
+    for icolumn=-griddim/2, icolumn=(griddim/2)-1{
+        counter=icolumn+ (griddim/2)
+        for ix=0, ix=griddim-1{
+            Xorg.x[ix+counter*griddim]=ssdist*(icolumn)+ (ssdist/2) +freedom.repick() +makepos//left edge of the box plus half way
+        }
+    } 
+    for irow=-griddim/2, irow=(griddim/2)-1{
+        counter=irow+ (griddim/2)
+        for iy=0, iy=griddim-1{
+            Yorg.x[(griddim*iy)+counter]=ssdist*(irow)+ (ssdist/2)+ freedom.repick() +makepos//bottom edge of the box plus half way
+        }
+    }       
+}else if (DingNetwork){
+    Xorg=new Vector(numSACs)
+    Yorg=new Vector(numSACs)   
     numSACs=expnumSACs
-    thetas = new Vector(numSACs)
-    for i=0,numSACs-1{
-        thetas.x[i]=expangle
+    centerX=dendL*2
+    centerY=(sin (PI/3)*140*2)
+    Xorg.x[0]=centerX
+    Yorg.x[0]=centerY
+    for j=0, numSACs-2{
+        an=j*(PI/3)
+        Xorg.x[j+1]=centerX+(cos(an)*140)
+        Yorg.x[j+1]=centerY+(sin(an)*140)
     }
-    SACmaxDist=15
-    clchannelthres=.2//.008
-    clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
-    clchannelamp=.9//.09
-    clchanneltau1=10
-    clchanneltau2=3
-    clchannelgbar=100
-    cachannelshift=15//10
-    cachannelg=.0029//.005
-    cachanneltranslation=0
-     //makes the i for -40 look like the i for -50
-    //K Channel
-    kv_gmax=0//50
-    kv_n_50=-20
-    kv_n_slope=-.04
-    n_base_kv=.1
-    kv_h_50=-60
-    kv_h_slope=.15
-    h_base_kv=.05
-    kv_ntau_50=-30
-    kv_ntau_slope=0
-    kv_ntau_max=1
-    kv_htau_50=0
-    kv_htau_slope=0
-    kv_htau_max=10
-    kv_nN=1
-    kv_spread_min=0
-    kv_spread_mas=200
-    e_kv=-70
-    VGKCMaxDistance=200
+
+
+}else if(TwoSACLeeExperiment||clchannelcheck||ThreeSACVGCCcheck){ 
+    Xorg= new Vector(numSACs,0)
+    Yorg= new Vector(numSACs,0)
+    Xorg.x[1]=120
+    if(ThreeSACVGCCcheck){
+        Xorg.x[2]=-120
+    }
+}else  {
+    Xorg= new Vector(numSACs,0)
+    Yorg= new Vector(numSACs,0)
+}
+
+//Gang building
+gangL=150
+numgangDend=12
+SACgangDist=15
+
+CalciumConductance=.05
     
-
-    objectvar Xorg, Yorg
-    objectvar ranCord, freedom
-    makepos=(griddim*ssdist/2) +50
-
-    if(network1){
-        /*
-        Xorg= new Vector(numSACs,0)
-        Yorg= new Vector(numSACs,0)
-        Xorg.x[0]=60
-        Yorg.x[0]=60
-        */
-        /*
-        Xorg= new Vector(numSACs,0)
-        Yorg= new Vector()
-
-        for irow=0,griddim-1 {
-            for i=0,griddim-1{
-                Yorg.append(irow*ssdist)
-            }
-        }
-        for icol=0,griddim-1{
-            for i=0,griddim-1{
-            Xorg.x[icol+griddim*i]=(icol*ssdist)
-            }
-        }
-        likelySAC=.1
-        */
-        
-        ranCord=new Random()
-        ranCord.uniform(0,(griddim-1)*ssdist)
-
-        Xorg=new Vector(numSACs)
-        Yorg=new Vector(numSACs)
-        for i=0, numSACs-1{
-            Xorg.x[i]=ranCord.repick()
-            Yorg.x[i]=ranCord.repick()
-        }
-    }else if(network2){
-        freedom= new Random()
-        freedom.uniform((-ssdist/2)*placementfreedom,(ssdist/2)*placementfreedom)
-        Xorg=new Vector(numSACs)
-        Yorg=new Vector(numSACs)
-        for icolumn=-griddim/2, icolumn=(griddim/2)-1{
-            counter=icolumn+ (griddim/2)
-            for ix=0, ix=griddim-1{
-                Xorg.x[ix+counter*griddim]=ssdist*(icolumn)+ (ssdist/2) +freedom.repick() +makepos//left edge of the box plus half way
-            }
-        } 
-        for irow=-griddim/2, irow=(griddim/2)-1{
-            counter=irow+ (griddim/2)
-            for iy=0, iy=griddim-1{
-                Yorg.x[(griddim*iy)+counter]=ssdist*(irow)+ (ssdist/2)+ freedom.repick() +makepos//bottom edge of the box plus half way
-            }
-        }       
-    }else if (DingNetwork){
-        Xorg=new Vector(numSACs)
-        Yorg=new Vector(numSACs)   
-        numSACs=expnumSACs
-        centerX=dendL*2
-        centerY=(sin (PI/3)*140*2)
-        Xorg.x[0]=centerX
-        Yorg.x[0]=centerY
-        for j=0, numSACs-2{
-            an=j*(PI/3)
-            Xorg.x[j+1]=centerX+(cos(an)*140)
-            Yorg.x[j+1]=centerY+(sin(an)*140)
-        }
-
-
-    }else if(TwoSACLeeExperiment||clchannelcheck||ThreeSACVGCCcheck){ 
-        Xorg= new Vector(numSACs,0)
-        Yorg= new Vector(numSACs,0)
-        Xorg.x[1]=120
-        if(ThreeSACVGCCcheck){
-            Xorg.x[2]=-120
-        }
-    }else  {
-        Xorg= new Vector(numSACs,0)
-        Yorg= new Vector(numSACs,0)
-    }
-
-    //Gang building
-    gangL=150
-    numgangDend=12
-    SACgangDist=15
-
-    CalciumConductance=.05
     //-------------------------------END PARAMETERS
     //---------------------------
     numSimp=2
@@ -762,6 +759,16 @@ if (SingleSACDingExperiment){
 
 if(SingleSACExperiment){
     expand=0
+    if (name_declared("batch")==0) {
+        Sim_Exp_Num=0
+        expbipspeed=.5
+        expcontrast=.5
+    }else{
+        Sim_Exp_Num=10
+        expbipspeed=.7
+        expcontrast=.7
+    }
+
     build()
     setg()
     print " we have built"
@@ -1001,6 +1008,7 @@ if(SingleSACExperiment){
     graphAngleCA()
     graphAngleV()
     print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
+    print "contrast, speed: ", expcontrast, expbipspeed
     fileob.aopen("SingleSACExperimentSpeedsAndContrasts.txt")
     if(DingNetwork==0){
         fileob.printf("%g %g %g  \n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )

@@ -1,0 +1,1 @@
+nrngui batch=0 mainA.hoc

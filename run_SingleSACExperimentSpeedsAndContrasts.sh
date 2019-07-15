@@ -16,12 +16,14 @@ do
     do
         for k in {0..1}
         do
-            DingNetwork=k
-            expbipspeed=i
-            expcontrast=j
 
             echo "Running Experiment..."
             nrngui -nogui MainA.hoc
+            DingNetwork=k
+            expbipspeed=i
+            expcontrast=j
+            
+
         done
     done
 done
