@@ -1,8 +1,7 @@
 
-
 proc build(){
-    for i=0,numSACs-1{
-        SAC[i]=new star(Xorg.x[i],Yorg.x[i])
+    for p=0,numSACs-1{
+        SAC[p]=new star(Xorg.x[p],Yorg.x[p])
 
     }
 }
@@ -263,4 +262,106 @@ proc Ggraph(){
 proc Ggraphc(){
     IBIPrecList.object($1*2).plot(g12,6,1)
     IBIPrecList.object($1*2 +1).plot(g12,6,1)
+}
+
+proc placeSAC(){
+    if(network1){    
+        ssdist=60
+        griddim=300/ssdist +5
+        //expnumSACs=1
+        expnumSACs=griddim*griddim
+    }
+    if(network2){
+        ssdist=75
+        placementfreedom=.25
+        griddim=3
+        expnumSACs=griddim*griddim
+    }
+    if(DingNetwork){
+        expnumSACs=7
+    }
+    numSACs=expnumSACs
+    
+    thetas = new Vector(numSACs)
+    for i=0,numSACs-1{
+        thetas.x[i]=expangle
+    }
+
+    makepos=(griddim*ssdist/2) +50
+    if(network1){
+        /*
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+        Xorg.x[0]=60
+        Yorg.x[0]=60
+        */
+        /*
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector()
+
+        for irow=0,griddim-1 {
+            for i=0,griddim-1{
+                Yorg.append(irow*ssdist)
+            }
+        }
+        for icol=0,griddim-1{
+            for i=0,griddim-1{
+            Xorg.x[icol+griddim*i]=(icol*ssdist)
+            }
+        }
+        likelySAC=.1
+        */
+        
+        ranCord=new Random()
+        ranCord.uniform(0,(griddim-1)*ssdist)
+
+        Xorg=new Vector(numSACs)
+        Yorg=new Vector(numSACs)
+        for i=0, numSACs-1{
+            Xorg.x[i]=ranCord.repick()
+            Yorg.x[i]=ranCord.repick()
+        }
+    }else if(network2){
+        freedom= new Random()
+        freedom.uniform((-ssdist/2)*placementfreedom,(ssdist/2)*placementfreedom)
+        Xorg=new Vector(numSACs)
+        Yorg=new Vector(numSACs)
+        for icolumn=-griddim/2, icolumn=(griddim/2)-1{
+            counter=icolumn+ (griddim/2)
+            for ix=0, ix=griddim-1{
+                Xorg.x[ix+counter*griddim]=ssdist*(icolumn)+ (ssdist/2) +freedom.repick() +makepos//left edge of the box plus half way
+            }
+        } 
+        for irow=-griddim/2, irow=(griddim/2)-1{
+            counter=irow+ (griddim/2)
+            for iy=0, iy=griddim-1{
+                Yorg.x[(griddim*iy)+counter]=ssdist*(irow)+ (ssdist/2)+ freedom.repick() +makepos//bottom edge of the box plus half way
+            }
+        }       
+    }else if (DingNetwork){
+        Xorg=new Vector(numSACs)
+        Yorg=new Vector(numSACs)   
+        numSACs=expnumSACs
+        centerX=dendL*2
+        centerY=(sin (PI/3)*140*2)
+        Xorg.x[0]=centerX
+        Yorg.x[0]=centerY
+        for j=0, numSACs-2{
+            an=j*(PI/3)
+            Xorg.x[j+1]=centerX+(cos(an)*140)
+            Yorg.x[j+1]=centerY+(sin(an)*140)
+        }
+
+
+    }else if(TwoSACLeeExperiment||clchannelcheck||ThreeSACVGCCcheck){ 
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+        Xorg.x[1]=120
+        if(ThreeSACVGCCcheck){
+            Xorg.x[2]=-120
+        }
+    }else  {
+        Xorg= new Vector(numSACs,0)
+        Yorg= new Vector(numSACs,0)
+    }
 }

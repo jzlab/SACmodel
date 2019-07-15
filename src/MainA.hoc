@@ -13,7 +13,7 @@ SingleSACVGCCExperiment=0
 ThreeSACVGCCcheck=0
 SimpleClamp=0
 
-expnumSACs=1              
+expnumSACs=1            
 expbipG1=1
 expbipG2=.2
 exptstop=1000
@@ -77,21 +77,7 @@ if(SimpleClamp){
     clampingdend1=clampingdend
 }
 
-if(network1){    
-    ssdist=60
-    griddim=300/ssdist +5
-    //expnumSACs=1
-    expnumSACs=griddim*griddim
-}
-if(network2){
-    ssdist=75
-    placementfreedom=.25
-    griddim=3
-    expnumSACs=griddim*griddim
-}
-if(DingNetwork){
-    expnumSACs=7
-}
+
 //-----------------------------------BEGIN PARAMETERS
 tstop=exptstop
 //SAC cell morphology
@@ -122,11 +108,13 @@ bipspeed=expbipspeed
 
 //SAC building
 objectvar thetas
+print expnumSACs, "=expnumSACs"
 numSACs=expnumSACs
+print numSACs, "=numSACs"
 thetas = new Vector(numSACs)
-for i=0,numSACs-1{
-    thetas.x[i]=expangle
-}
+    for i=0,numSACs-1{
+        thetas.x[i]=expangle
+    }
 SACmaxDist=15
 clchannelthres=.2//.008
 clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
@@ -158,94 +146,18 @@ kv_spread_mas=200
 e_kv=-70
 VGKCMaxDistance=200
 
-
-objectvar Xorg, Yorg
-objectvar ranCord, freedom
-makepos=(griddim*ssdist/2) +50
-
-if(network1){
-    /*
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-    Xorg.x[0]=60
-    Yorg.x[0]=60
-    */
-    /*
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector()
-
-    for irow=0,griddim-1 {
-        for i=0,griddim-1{
-            Yorg.append(irow*ssdist)
-        }
-    }
-    for icol=0,griddim-1{
-        for i=0,griddim-1{
-        Xorg.x[icol+griddim*i]=(icol*ssdist)
-        }
-    }
-    likelySAC=.1
-    */
-    
-    ranCord=new Random()
-    ranCord.uniform(0,(griddim-1)*ssdist)
-
-    Xorg=new Vector(numSACs)
-    Yorg=new Vector(numSACs)
-    for i=0, numSACs-1{
-        Xorg.x[i]=ranCord.repick()
-        Yorg.x[i]=ranCord.repick()
-    }
-}else if(network2){
-    freedom= new Random()
-    freedom.uniform((-ssdist/2)*placementfreedom,(ssdist/2)*placementfreedom)
-    Xorg=new Vector(numSACs)
-    Yorg=new Vector(numSACs)
-    for icolumn=-griddim/2, icolumn=(griddim/2)-1{
-        counter=icolumn+ (griddim/2)
-        for ix=0, ix=griddim-1{
-            Xorg.x[ix+counter*griddim]=ssdist*(icolumn)+ (ssdist/2) +freedom.repick() +makepos//left edge of the box plus half way
-        }
-    } 
-    for irow=-griddim/2, irow=(griddim/2)-1{
-        counter=irow+ (griddim/2)
-        for iy=0, iy=griddim-1{
-            Yorg.x[(griddim*iy)+counter]=ssdist*(irow)+ (ssdist/2)+ freedom.repick() +makepos//bottom edge of the box plus half way
-        }
-    }       
-}else if (DingNetwork){
-    Xorg=new Vector(numSACs)
-    Yorg=new Vector(numSACs)   
-    numSACs=expnumSACs
-    centerX=dendL*2
-    centerY=(sin (PI/3)*140*2)
-    Xorg.x[0]=centerX
-    Yorg.x[0]=centerY
-    for j=0, numSACs-2{
-        an=j*(PI/3)
-        Xorg.x[j+1]=centerX+(cos(an)*140)
-        Yorg.x[j+1]=centerY+(sin(an)*140)
-    }
-
-
-}else if(TwoSACLeeExperiment||clchannelcheck||ThreeSACVGCCcheck){ 
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-    Xorg.x[1]=120
-    if(ThreeSACVGCCcheck){
-        Xorg.x[2]=-120
-    }
-}else  {
-    Xorg= new Vector(numSACs,0)
-    Yorg= new Vector(numSACs,0)
-}
-
 //Gang building
 gangL=150
 numgangDend=12
 SACgangDist=15
 
 CalciumConductance=.05
+
+
+
+
+
+
     
     //-------------------------------END PARAMETERS
     //---------------------------
@@ -318,14 +230,19 @@ CalciumConductance=.05
     histvec= new Vector()
     whichbip=new Vector()
 
+objectvar Xorg, Yorg
+objectvar ranCord, freedom
+
 
     FileNumber=1
     load_file("nrngui.hoc")
     load_file("BuildSAC.hoc")
     load_file("Delay_ConnectSAC.hoc")
     load_file("testingSAC.hoc")
+                                                                                                                                                              
+
     //gui
-    if(1==1){
+    if(1==0){
 		xpanel("Params")
 			xvalue("Contrast", "expcontrast" , 1, "update()")
             xvalue("bipG1")
@@ -559,7 +476,7 @@ if(ThreeSACVGCCcheck){
     fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0] )
     fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1] )
     fileob.close()
-}
+}                                                   
 if(TwoSACLeeExperiment){
     print "TwoSACLeeExperiment"
     takingtrace=1
@@ -759,19 +676,44 @@ if (SingleSACDingExperiment){
 
 if(SingleSACExperiment){
     expand=0
-    if (name_declared("batch")==0) {
+    /*
+    if (batch==0) {
         Sim_Exp_Num=0
         expbipspeed=.5
-        expcontrast=.5
+        expcontrast=.42
     }else{
         Sim_Exp_Num=10
 
     }
-
+    */
+    counter=0
+    for (j=.5;j<=1.1;j=j+.2){
+        for (i=.5;i<=.7;i=i+.2){
+            for k=0,1{
+                DingNetwork=k
+                expbipspeed=i
+                expcontrast=j 
+                counter=counter+1
+                if(counter==batch){
+                    break
+                }
+            }
+            if(counter==batch){
+                    break
+            }
+        }
+        if(counter==batch){
+                    break
+        }
+    }
+    placeSAC()
+    objectvar SAC[numSACs]
     build()
     setg()
     print " we have built"
     delay()
+    print " 2 contrast, speed: ", expcontrast, expbipspeed
+
     savevariangle()
     if(1==1){
     if (network1||network2){
@@ -785,7 +727,7 @@ if(SingleSACExperiment){
     }else{
         chosenSAC=0
     }
-    
+    print " 2.5 contrast, speed: ", expcontrast, expbipspeed
     //fauxconnect()
 
     //testg3=SAC[chosenSAC]. MrecList().object(27)
@@ -797,6 +739,7 @@ if(SingleSACExperiment){
     if(1==1){
     //testg.record(&SAC[0].bipSynapses.object(83).i,1)  
     //timevec.record(&t)
+    print "3 contrast, speed: ", expcontrast, expbipspeed
     numb= SAC[chosenSAC].bipSynapses.count() //recording excitatory currents
     for i=0, numb-1{
         temp=new Vector()
@@ -882,7 +825,7 @@ if(SingleSACExperiment){
     }
     */
    
-    
+   
     print "we ran"
 
     if(network1||network2||DingNetwork){
@@ -904,6 +847,8 @@ if(SingleSACExperiment){
         excitevec=IBIPrecList.object(0).add(IBIPrecList.object(i))
     }
     */
+
+
     if(1==0){
     excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(3*2 +1))
     excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(12*2 ))
@@ -990,6 +935,8 @@ if(SingleSACExperiment){
     
     //graphAngleCA()
     //graphAngleV()
+
+
     for w=0, SAC[chosenSAC].variAngle.size()-1{
         if(expand){
             num=SAC[chosenSAC].fauxvaricurrent.object(w).max()
@@ -1139,6 +1086,7 @@ if(SingleSACExperiment){
     */
 
    //timevec.x[i]
+
     }
     }
 }

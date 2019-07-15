@@ -1,0 +1,7 @@
+batch=3
+load_file("MainA.hoc")
+/*for s=3,16{
+    batch=s
+    load_file("MainA.hoc")
+}
+*/
