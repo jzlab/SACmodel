@@ -1,1 +1,2 @@
-nrngui  mainA.hoc
+cd src/
+nrngui mainA.hoc
