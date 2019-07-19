@@ -12,19 +12,23 @@ clchannelcheck=0
 SingleSACVGCCExperiment=0
 ThreeSACVGCCcheck=0
 SimpleClamp=0
+SingleSACFakeNetwork=0
 
 expnumSACs=1            
 expbipG1=1
 expbipG2=.2
 exptstop=1000
-expcontrast=.3
+expcontrast=.8
 nodends=0
 network1=0 //probably not
 network2=0
-DingNetwork=0
+DingNetwork=1
+fakenetwork=0
 expangle=0
 expbipspeed=.7
 expdendgpas=.0008//normally//.001 old//.0002 if it's a twosaclee
+shifty=65
+
 
 
 if (GanglionExperiment){ 
@@ -96,8 +100,14 @@ dendRa=100
 for igen=0,numGen-1{
 numDend+=numFirst*2^(igen)
 }
+
 numOutside=numFirst*2^(numGen-1)
-numInside=numDend-numOutside
+numInside=numDend-numOutside //42
+
+for igen=0, 1{
+    numInside2+=numFirst*2^(igen) //19
+}
+
 
 //bip placement
 amountoflowcontrast=1
@@ -118,12 +128,12 @@ thetas = new Vector(numSACs)
 SACmaxDist=15
 clchannelthres=.2//.008
 clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
-clchannelamp=.9//.09
+clchannelamp=8//.09
 clchanneltau1=10
 clchanneltau2=3
 clchannelgbar=100
 cachannelshift=15//10
-cachannelg=.0029//.005
+cachannelg=.002//.005
 cachanneltranslation=0
     //makes the i for -40 look like the i for -50
 //K Channel
@@ -151,6 +161,12 @@ gangL=150
 numgangDend=12
 SACgangDist=15
 
+//fake inhibition
+
+fitau=20
+figmax=1
+fie=-65
+
 CalciumConductance=.05
 
 
@@ -167,7 +183,7 @@ CalciumConductance=.05
     chosenSAC=0
     objectvar testg, testg2, g6, g5, g7, g8, g9, g4, g10,g12, testg4, testg3, testg5, SAC[numSACs], fileob, g, voltagevec, timevec, maxdifvec, clamps[numclamps], clampcurrent, without[top], with[top], FauxRing[2], simplething, emptyvec, vspot[top]
     objectvar voltagejumps, randSAC, Gang, temp, currentmaxs, differencemin, List1, List2, temp2, difference[top], Simple[numSimp], vec1, vec2, randSACs, randCon
-    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec, ISACLrecList, ISACRrecList, inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec, whichSACR, whichSACL, histvec, whichconnection, whichbip
+    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec, ISACLrecList, ISACRrecList, inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec, whichSACR, whichSACL, histvec, whichconnection, whichbip, whichdend, imagbip, imagbipselect, fakeinhibitions, whichSACR1, whichSACL1, whichSACR2, whichSACL2, ISACL1recList, ISACR1recList, ISACL2recList, ISACR2recList, inhibitvecL1, inhibitvecR1, inhibitvecL2, inhibitvecR2, ConductanceVectorList, inhibitveclist
     testg=new Vector()
     testg2=new Vector()
     testg3=new Vector()
@@ -225,10 +241,24 @@ CalciumConductance=.05
     ISACrecList= new List()
     ISACLrecList=new List()
     ISACRrecList=new List()
+    ISACL1recList=new List()
+    ISACR1recList=new List()
+    ISACL2recList=new List()
+    ISACR2recList=new List()
     whichSACR= new Vector()
+    whichSACR1= new Vector()
+    whichSACR2= new Vector()
     whichSACL= new Vector()
+    whichSACL1= new Vector()
+    whichSACL2= new Vector()
     histvec= new Vector()
     whichbip=new Vector()
+    whichdend=new Vector()
+    imagbip=new Vector()
+    imagbipselect=new Vector()
+    fakeinhibitions=new List()
+    ConductanceVectorList= new List()
+    inhibitveclist= new List()
 
 objectvar Xorg, Yorg
 objectvar ranCord, freedom
@@ -262,6 +292,75 @@ objectvar ranCord, freedom
     }
     
     //------------------------------------------EXPERIMENTS
+if(SingleSACFakeNetwork){
+    chosenSAC=0
+    placeSAC()
+    objectvar SAC[numSACs]
+    build()
+    setg()
+    print " we have built"
+    delay()
+    print " contrast, speed: ", expcontrast, expbipspeed
+    shifty=0
+    fakeinhibition()
+    xopen("AlphaSyn3.ses")
+    numb= SAC[chosenSAC].bipSynapses.count() //recording excitatory currents
+    for i=0, numb-1{
+        temp=new Vector()
+        temp.record(&SAC[chosenSAC].bipSynapses.object(i).g,1) //current or conductance?
+        IBIPrecList.append(temp)
+    }
+    if(fakenetwork){
+        for (i=0;i<=5;i=i+1){
+            if(i<3){
+                inhibitvecR.record(&fakeinhibitions.object(i).g,1)
+            }else{
+                inhibitvecL.record(&fakeinhibitions.object(i).g,1)
+            }
+        }
+    }
+    print "prepared correctly"
+    run()
+
+        for k=0, IBIPrecList.count()-1 {
+        belongs=0
+        belongstobranch(k, 0)
+        if(belongs==1){
+            //add
+            excitevecR= emptyvec.add(IBIPrecList.object(k))
+            whichbip.append(k)
+        } else{
+            belongstobranch(k, 3)
+            if(belongs==1){
+                //add
+                excitevecL= emptyvec.add(IBIPrecList.object(k))
+                whichbip.append(k)
+            }
+        }
+   
+    }
+    print "okay with building excite vectors"
+    //graphing
+    testg=excitevecL
+    testg2=excitevecR
+    inhibitvecL.plot(g6,1,1)
+    inhibitvecR.plot(g7,1,1)
+    graphG6()
+    graphG7()
+    graphAngleCA()
+    for w=0, numOutside-1{
+        num= SAC[chosenSAC].CAIrecList.object(w).max()
+        num2=SAC[chosenSAC].VrecList.object(w).max()
+        caivec.append(num)
+        voltagevec.append(num2)
+    }
+
+    print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
+    print "contrast, speed, shifty: ", expcontrast, expbipspeed, shifty
+    fileob.aopen("SingleSACFakeNetwork.txt")
+    fileob.printf("%g %g \n", shifty,(caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
+    fileob.close()
+}
 
 if(GanglionExperiment){
     //-----------------------------------------------BUILDING PHASE
@@ -686,24 +785,72 @@ if(SingleSACExperiment){
 
     }
     */
-    counter=0
-    for (j=.5;j<=1.1;j=j+.2){
-        for (i=.5;i<=.7;i=i+.2){
-            for k=0,1{
-                DingNetwork=k
-                expbipspeed=i
-                expcontrast=j 
+    DingNetworkLooping=0
+    if(DingNetworkLooping){
+        if (batch>0){
+            counter=0
+            for (j=.6;j<=1.2;j=j+.1){
+                for (i=.5;i<=.7;i=i+.9){
+                    for k=0,1{
+                        DingNetwork=k
+                        fakenetwork=0^k
+                        expbipspeed=i
+                        expcontrast=j 
+                        counter=counter+1
+                        if(counter==batch){
+                            break
+                        }
+                    }
+                    if(counter==batch){
+                            break
+                    }
+                }
+                if(counter==batch){
+                            break
+                }
+            }
+        }
+    }
+    FakeNetworkLoopingTimes=0
+    if(FakeNetworkLoopingTimes){
+        if (batch>0){
+            counter=0
+            for k=0,13{
+                shifty=-65+k*13
                 counter=counter+1
                 if(counter==batch){
                     break
                 }
             }
-            if(counter==batch){
-                    break
-            }
         }
-        if(counter==batch){
-                    break
+    }
+    FakeNetworkLoopingPosition=0
+    if(FakeNetworkLoopingPosition){
+        if (batch>0){
+            counter=0
+            for j=0,1{
+                if(j==0){
+                    firstring=1
+                }else{
+                    firstring=0
+                }
+                for k=0,5{
+                    if(k%2==0){ //if even
+                        position=k/4
+                        switchsides=0
+                    }else{
+                        position=-(k-1)/4
+                        switchsides=1
+                    }
+                    counter=counter+1
+                    if(counter==batch){
+                        break
+                    }
+                }
+                if(counter==batch){
+                        break
+                    }
+            }
         }
     }
     placeSAC()
@@ -712,7 +859,7 @@ if(SingleSACExperiment){
     setg()
     print " we have built"
     delay()
-    print " 2 contrast, speed: ", expcontrast, expbipspeed
+    print " 2 contrast, speed, shifty, firstring, position, DingNetwork, fakenetwork: ", expcontrast, expbipspeed, shifty, firstring, position, DingNetwork, fakenetwork
 
     savevariangle()
     if(1==1){
@@ -727,7 +874,40 @@ if(SingleSACExperiment){
     }else{
         chosenSAC=0
     }
-    print " 2.5 contrast, speed: ", expcontrast, expbipspeed
+    if (fakenetwork){
+        //make the g values into vectors
+        fileob.ropen("ConductanceVectorRmaster.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorR1master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorL1master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorLmaster.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorL2master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorR2master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fakeinhibition()
+    }
     //fauxconnect()
 
     //testg3=SAC[chosenSAC]. MrecList().object(27)
@@ -754,6 +934,13 @@ if(SingleSACExperiment){
             ISACrecList.append(temp)
         }
     }
+    if(fakenetwork){
+        for i=0, numFirst-1{
+            temp=new Vector()
+            temp.record(&fakeinhibitions.object(i).g,1)
+            inhibitveclist.append(temp)
+        }
+    }
     print "prepared correctly"
     //SPECIAL TRACES\
     if(network1||network2||DingNetwork){
@@ -761,21 +948,44 @@ if(SingleSACExperiment){
         ISACLpos=x3d(0)-((x3d(0)-x3d(1))/2)
         access SAC[chosenSAC].dend[0]
         ISACRpos=x3d(0)-((x3d(0)-x3d(1))/2)
-        for i=0, SAC[chosenSAC].fromList.count()-1{
+        for i=0, SAC[chosenSAC].fromList.count()-1{  //-------record the g at various places (maybe record them all the time?)
+            m=SAC[chosenSAC].fromList.object(i).x[0] //what SAC are you from?
             if (SAC[chosenSAC].fromList.object(i).x[2]==3){ //left
-                n=SAC[chosenSAC].fromList.object(i).x[0] //what SAC are you from?
-                if(n==4){b=i}
+                if(m==4){b=i}
                 whichSACL.append(n)
                 temp=new Vector()
                 temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
                 ISACLrecList.append(temp)
             }
             if (SAC[chosenSAC].fromList.object(i).x[2]==0){ //right //if you synapse onto dend 0
-                m= SAC[chosenSAC].fromList.object(i).x[0] //where are you from?
                 whichSACR.append(m)
                 temp=new Vector()
                 temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
                 ISACRrecList.append(temp)
+            }
+            if (SAC[chosenSAC].fromList.object(i).x[2]==1){ //right1 //if you synapse onto dend 1
+                whichSACR.append(m)
+                temp=new Vector()
+                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
+                ISACR1recList.append(temp)
+            }
+            if (SAC[chosenSAC].fromList.object(i).x[2]==2){ //left1 
+                whichSACL1.append(m)
+                temp=new Vector()
+                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
+                ISACL1recList.append(temp)
+            }
+            if (SAC[chosenSAC].fromList.object(i).x[2]==4){ //left2 
+                whichSACL2.append(m)
+                temp=new Vector()
+                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
+                ISACL2recList.append(temp)
+            }
+            if (SAC[chosenSAC].fromList.object(i).x[2]==5){ //right2
+                whichSACR2.append(m)
+                temp=new Vector()
+                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
+                ISACR2recList.append(temp)
             }
         }
         //obj= histvec.hist(whichSAC, .5,6, 1) //bin where they are from
@@ -829,58 +1039,45 @@ if(SingleSACExperiment){
     print "we ran"
 
     if(network1||network2||DingNetwork){
-        inhibitvecL=new Vector()
-        inhibitvecR=new Vector()
+        
+  
          for i=1,ISACLrecList.count()-1{
-            inhibitvecL=ISACLrecList.object(0).add(ISACLrecList.object(i))
+            temp=new Vector()
+            temp=ISACLrecList.object(0).add(ISACLrecList.object(i))
+            inhibitveclist.append(temp)
         }
         for i=1,ISACRrecList.count()-1{
-            inhibitvecR=ISACRrecList.object(0).add(ISACRrecList.object(i))
+            temp=new Vector()
+            temp=ISACRrecList.object(0).add(ISACRrecList.object(i))
+            inhibitveclist.append(temp)
         }
+        for i=1,ISACL1recList.count()-1{
+            temp=new Vector()
+            temp=ISACL1recList.object(0).add(ISACL1recList.object(i))
+            inhibitveclist.append(temp)
+        }
+        for i=1,ISACR1recList.count()-1{
+            temp= new Vector()
+            temp=ISACR1recList.object(0).add(ISACR1recList.object(i))
+            inhibitveclist.append(temp)
+        }
+        for i=1,ISACL2recList.count()-1{
+            temp= new Vector()
+            temp=ISACL2recList.object(0).add(ISACL2recList.object(i))
+            inhibitveclist.append(temp)
+        }
+        for i=1,ISACR2recList.count()-1{
+            temp =new Vector()
+            temp=ISACR2recList.object(0).add(ISACR2recList.object(i))
+            inhibitveclist.append(temp)
+        }
+    }else if(fakenetwork){
+
     }else{
         inhibitvecL=new Vector(tstop,0)
         inhibitvecR=new Vector(tstop,0)
     }
     
-    /*
-    for i=1,numb-1{
-        excitevec=IBIPrecList.object(0).add(IBIPrecList.object(i))
-    }
-    */
-
-
-    if(1==0){
-    excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(3*2 +1))
-    excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(12*2 ))
-    excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(12*2 +1))
-     excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(13*2 ))
-    excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(13*2 +1))
-    
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(30*2 ))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(30*2 +1))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(31*2 ))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(31*2 +1))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(32*2 ))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(32*2 +1))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(33*2 ))
-        excitevecL=IBIPrecList.object(3*2).add(IBIPrecList.object(33*2 +1))
-    }
-    if(1==0){
-    excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(0*2 +1))
-    excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(6*2 ))
-    excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(6*2 +1))
-     excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(7*2 ))
-    excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(7*2 +1))
-    
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(18*2 ))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(18*2 +1))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(19*2 ))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(19*2 +1))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(20*2 ))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(20*2 +1))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(21*2 ))
-        excitevecR=IBIPrecList.object(0*2).add(IBIPrecList.object(21*2 +1))
-    }
     print "ready to record excitatory"
 
     for k=0, IBIPrecList.count()-1 {
@@ -900,6 +1097,31 @@ if(SingleSACExperiment){
         }
    
     }
+    print "okay with whichbip"
+    for i=0, numDend*2-1{
+        imagbip.append(i)
+    }
+    for k=0, imagbip.size()-1{
+        belongs=0
+        belongstobranch(k, 0)
+        if(belongs==1){
+            //add
+            imagbipselect.append(k)
+        }else{
+            belongstobranch(k, 3)
+            if(belongs==1){
+                //add
+                imagbipselect.append(k)
+            }
+        }
+    }
+
+    for which=0, imagbipselect.size()-1{
+        if((imagbipselect.x[which]%2==0)&&(imagbipselect.x[which]/2)>=numInside2){
+            whichdend.append(imagbipselect.x[which]/2)
+        }
+        
+    }
     print "excitatory recorded"
     //testg=IBIPrecList.object(0)
     
@@ -913,8 +1135,12 @@ if(SingleSACExperiment){
     testg=excitevecL
     testg2=excitevecR
     if(network1||network2||DingNetwork){
-        inhibitvecL.plot(g6,1,1)
-        inhibitvecR.plot(g7,1,1)
+        inhibitveclist.o(0).plot(g7,1,1)
+        inhibitveclist.o(3).plot(g6,1,1)
+        inhibitveclist.o(1).plot(g7,1,1)
+        inhibitveclist.o(2).plot(g6,1,1)
+        inhibitveclist.o(5).plot(g7,1,1)
+        inhibitveclist.o(4).plot(g6,1,1)
     }
     graphG6()
     graphG7()
@@ -954,7 +1180,15 @@ if(SingleSACExperiment){
     graphAngleCA()
     graphAngleV()
     print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
-    print "contrast, speed: ", expcontrast, expbipspeed
+    print "contrast, speed, DingNetwork, fakenetwork: ", expcontrast, expbipspeed, DingNetwork,fakenetwork
+    
+    if(0==1&&(FakeNetworkLoopingPosition||FakeNetworkLoopingTimes)){
+        
+        fileob.aopen("SingleSACFakeNetwork.txt")
+        fileob.printf("%g %g %g %g \n", shifty, firstring, position, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
+        fileob.close()
+    }
+
     fileob.aopen("SingleSACExperimentSpeedsAndContrasts.txt")
     if(DingNetwork==0){
         fileob.printf("%g %g %g  \n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
@@ -962,13 +1196,31 @@ if(SingleSACExperiment){
         fileob.printf("%g %g   %g\n", expbipspeed, expcontrast, (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
     }
     fileob.close()
-    //testg3= SAC[chosenSAC].receivesCl.object(0).capre
-    //testg4=SAC[chosenSAC].VrecList.object(Dend2)
-    //graphG8()
-    //graphG9()
 
+    //--------recording conductances
+    if(DingNetwork){
+        fileob.wopen("ConductanceVectorR.txt")
+        inhibitveclist.o(0).vwrite(fileob)
+        fileob.close()
+        fileob.wopen("ConductanceVectorR1.txt")
+        inhibitveclist.o(1).vwrite(fileob)
+        fileob.close()
+        fileob.wopen("ConductanceVectorR2.txt")
+        inhibitveclist.o(5).vwrite(fileob)
+        fileob.close()
+        fileob.wopen("ConductanceVectorL.txt")
+        inhibitveclist.o(3).vwrite(fileob)
+        fileob.close()
+        fileob.wopen("ConductanceVectorL1.txt")
+        inhibitveclist.o(2).vwrite(fileob)
+        fileob.close()
+        fileob.wopen("ConductanceVectorL2.txt")
+        inhibitveclist.o(4).vwrite(fileob)
+        fileob.close()
+    }
+    
     //SPECIAL TRACES SECTION
-
+    if(0==1){
     fileob.wopen("SingleSACExperimentDetailedTraces.txt")
     fileob.printf("SingleSACExperimentDetailedTraces %g\n",expcontrast)
     fileob.printf("Left4up Left4 Left3up Left3 Left2 Left1 InhibL InhibR Right1 Right2 Right3up Right3 Right4up Right4 \n")
@@ -976,7 +1228,8 @@ if(SingleSACExperiment){
         fileob.printf("%g %g %g %g %g %g %g %g %g %g %g %g %g %g\n",SAC[chosenSAC].VrecList.object(67-numInside).x[i],SAC[chosenSAC].VrecList.object(69-numInside).x[i], SAC[chosenSAC].V2recList.object(30).x[i],SAC[chosenSAC].V2recList.object(31).x[i],SAC[chosenSAC].V2recList.object(12).x[i], SAC[chosenSAC].V2recList.object(3).x[i], inhibitvecL.x[i], inhibitvecR.x[i], SAC[chosenSAC].V2recList.object(0).x[i], SAC[chosenSAC].V2recList.object(7).x[i],SAC[chosenSAC].V2recList.object(21).x[i], SAC[chosenSAC].V2recList.object(20).x[i],   SAC[chosenSAC].VrecList.object(48-numInside).x[i], SAC[chosenSAC].VrecList.object(46-numInside).x[i])
     }
     fileob.close()
-
+    }
+    if(0==1){
     fileob.wopen("SingleSACExperimentVvsAngle.txt")
     fileob.printf("Maximum_Calcium_Concentration_Across_Angles %g\n",expcontrast)
     fileob.printf("Angle Max_V Max_CAi \n")
@@ -986,8 +1239,9 @@ if(SingleSACExperiment){
     fileob.printf("%g %g %g\n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0], caivec.x[0] )
     fileob.printf("%g %g %g\n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1], caivec.x[1] )
     fileob.close()
+    }
   print "vvsangle done"
-    if (network1||network2||DingNetwork){
+    if (network1||network2||DingNetwork||fakenetwork){
         /* these don't exist anymore
         fileob.wopen("SingleSACExperimentExciteInhibit.txt")
         fileob.printf("Single_SAC_Experiment_Excite_Inhibit \n")
@@ -1002,10 +1256,11 @@ if(SingleSACExperiment){
         fileob.wopen("SingleSACExperimentConductances.txt")
         fileob.printf("SingleSACExperimentConductances \n")
         fileob.printf("t space sac/bip g \n")
+        /*
         for j=0, ISACLrecList.count()-1{
             for i=0,tstop-1{
                 if(ISACLrecList.object(j).x[i]==0){
-                    fileob.printf("%g %g sac  \n",i ,ISACLpos-Xorg.x[chosenSAC])
+                    //fileob.printf("%g %g sac  \n",i ,ISACLpos-Xorg.x[chosenSAC])
                 }else{
                     fileob.printf("%g %g sac %g\n",i ,ISACLpos-Xorg.x[chosenSAC], ISACLrecList.object(j).x[i] )
                 }
@@ -1014,40 +1269,80 @@ if(SingleSACExperiment){
         for j=0, ISACRrecList.count()-1{
             for i=0,tstop-1{
                 if(ISACRrecList.object(j).x[i]==0){
-                    fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
+                    //fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
                 }else{
                     fileob.printf("%g %g sac %g\n",i ,ISACRpos-Xorg.x[chosenSAC], ISACRrecList.object(j).x[i] )
                 }
+            }
+        }
+        */
+        for l=0,numFirst-1{
+
+        access SAC[chosenSAC].dend[l]
+        pos=x3d(0)-((x3d(0)-x3d(1))/2)
+            for i=0,tstop-1{
+                    if(inhibitveclist.object(j).x[i]==0){
+                        //fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
+                    }else{
+                        fileob.printf("%g %g sac %g\n",i ,pos-Xorg.x[chosenSAC], inhibitveclist.object(j).x[i] )
+                    }
             }
         }
         for l=0, whichbip.size()-1{
             j=whichbip.x[l]
             for i=0,tstop-1{
                 if(IBIPrecList.object(j).x[i] ==0 ){
-                    fileob.printf("%g %g bip  \n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC] )
+                    //fileob.printf("%g %g bip  \n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC] )
                 }else{
                     fileob.printf("%g %g bip %g\n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC],  IBIPrecList.object(j).x[i] )
                 }
             }
         }
-        //left cai
-        access SAC[chosenSAC].dend[Dend1+numInside]
-        for i=0, tstop-1{  
-            if(SAC[chosenSAC].CAIrecList.object(Dend1).x[i]!=0){
-                fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(Dend1).x[i] )
+        
+        
+        for l=0, whichdend.size()-1{
+            j=whichdend.x[l]
+            for i=0, tstop-1{  
+                access SAC[chosenSAC].dend[j]
+                if(j-numInside>=0){
+                    fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(j-numInside).x[i] )
+                }else{
+                    fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.5)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList2.object(j-numInside2).x[i] )
+                }
             }
         }
-        //right cai
-        access SAC[chosenSAC].dend[Dend2+numInside]
-        for i=0, tstop-1{
-            if( SAC[chosenSAC].CAIrecList.object(Dend2).x[i] !=0){
-                fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(Dend2).x[i] )
-            }
-            
-        }
+        
         fileob.close()
         
     }
+
+    fileob.wopen("SingleSACExperimentCAI.txt")
+    fileob.printf ("pos1 pos2 pos3 pos4 pos5 pos 6 pos7 pos8 pos9 pos10 pos11 pos12 pos13 pos14 pos15 pos16 pos17 pos18 pos19 pos20 pos21 pos22 pos23 pos24 t\n")
+    for l=0, whichdend.size()-1{
+        j=whichdend.x[l]
+        access SAC[chosenSAC].dend[j]
+        if(j-numInside>=0){
+            fileob.printf("%g ", x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC])
+        }else{
+            fileob.printf("%g ", x3d(0)+((x3d(1)-x3d(0))*.5)-Xorg.x[chosenSAC] )
+        }
+    }
+    fileob.printf("t \n" )
+
+    for i=0, tstop-1{
+        for l=0, whichdend.size()-1{
+            j=whichdend.x[l]
+            if(j-numInside>=0){
+                fileob.printf("%g ", SAC[chosenSAC].CAIrecList.object(j-numInside).x[i])
+            }else{
+                fileob.printf("%g ", SAC[chosenSAC].CAIrecList2.object(j-numInside2).x[i] )
+            }
+        }
+        fileob.printf("%g \n", i)
+    }
+    fileob.close()
+
+    print "conductances graphed"
     
     fileob.wopen("SingleSACExperimentVTrace.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
     //voltage ca concentration, ca current, potassium current

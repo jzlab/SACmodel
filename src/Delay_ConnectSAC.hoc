@@ -91,51 +91,118 @@ proc savevariangle(){
         }
     }
 }
+proc connecting2(){
+    for iSAC=0, numSACs-1{
+        if (iSAC==i2){ 
+        }else{
+        
+            if(((Xorg.x[iSAC]-x)^2)+ ((Yorg.x[iSAC]-y)^2)<(dendL/4)^2){      //we're close enough to the iSAC
+                for idend=0, numFirst-1{
+                    access SAC[iSAC].dend[idend]
+                    dendx= SAC[iSAC].InnerXpos.x[idend] 
+                    dendy= SAC[iSAC].InnerYpos.x[idend]
+                    
+                    if(((dendx-x)^2 + (dendy-y)^2)< SACmaxDist^2){           //we're close enough to the dend
+                        temp=new ComplexCl2(.5) 
+                        temp.scaling=clchannelscaling
+                        temp.amp=clchannelamp
+                        temp.thres=clchannelthres
+                        temp.tau1=clchanneltau1
+                        temp.tau2=clchanneltau2
+                        temp.g=cachannelg
+
+                        if(inout==0||inout=1){
+                            extension=.8
+                        }else{
+                            extension=.2
+                        }
+                        setpointer temp.capre, SAC[i2].dend[numInside+int(ivari/2)].cai(extension) //change this to accomodate .2 as well
+                        print extension                                                           //oh my gosh what if we include dends that aren't eh outsidiest dends?
+                        SAC[iSAC].receivesCl.append (temp)                   //i2 provides the gaba isac receives it
+                        temp= new Vector(3)
+                        temp.x[0]=i2 //SAC they're from
+                        temp.x[1]=ivari //outerdend they're from
+                        temp.x[2]=idend //which dend they synapse onto
+                        SAC[iSAC].fromList.append(temp)
+            
+                    }
+                }
+            } else{
+                continue
+            }                                                        
+        }
+    }
+}
 //--------------------------------conditionally connecting procedure
 objectvar temp
 proc connecting(){
-for i2=0, numSACs-1{     //switch back //numSACs-1
-
-    for ivari=0, SAC[i2].VrecList.count()-1{
-        x=SAC[i2].VrecXpos.get(ivari)
-        y=SAC[i2].VrecYpos.get(ivari)  
-        
-            for iSAC=0, numSACs-1{
-                if (iSAC==i2){ 
-                }else{
-                
-                    if(((Xorg.x[iSAC]-x)^2)+ ((Yorg.x[iSAC]-y)^2)<(dendL/4)^2){      //we're close enough to the iSAC
-                        for idend=0, numFirst-1{
-                            access SAC[iSAC].dend[idend]
-                            dendx= SAC[iSAC].InnerXpos.x[idend] 
-                            dendy= SAC[iSAC].InnerYpos.x[idend]
-                            
-                            if(((dendx-x)^2 + (dendy-y)^2)< SACmaxDist^2){           //we're close enough to the dend
-                                temp=new ComplexCl2(.5) 
-                                temp.scaling=clchannelscaling
-                                temp.amp=clchannelamp
-                                temp.thres=clchannelthres
-                                temp.tau1=clchanneltau1
-                                temp.tau2=clchanneltau2
-                                temp.g=cachannelg
-                                setpointer temp.capre, SAC[i2].dend[numInside+ivari].cai(.8)
-                                SAC[iSAC].receivesCl.append (temp)                   //i2 provides the gaba isac receives it
-                                temp= new Vector(3)
-                                temp.x[0]=i2 //SAC they're from
-                                temp.x[1]=ivari //outerdend they're from
-                                temp.x[2]=idend //which dend they synapse onto
-                                SAC[iSAC].fromList.append(temp)
-                    
-                            }
-                        }
-                    } else{
-                        continue
-                    }                                                        
-                }
-            }
+    for i2=0, numSACs-1{     //switch back //numSACs-1
+        for ivari=0, SAC[i2].VrecXpos.size()-1{ //presynaptic points of interest
+            x=SAC[i2].VrecXpos.get(ivari) //.8
+            y=SAC[i2].VrecYpos.get(ivari)  
+            connecting2()
+        }
+        for ivari=0, SAC[i2].VrecXpos2.size()-1{ 
+            x=SAC[i2].VrecXpos2.get(ivari)//.2
+            y=SAC[i2].VrecYpos2.get(ivari)  
+             connecting2()
+        }
+        for ivari=0, SAC[i2].VrecXpos3.size()-1{ 
+            x=SAC[i2].VrecXpos3.get(ivari)//.8
+            y=SAC[i2].VrecYpos3.get(ivari)  
+             connecting2()
+        }    
     }
 }
+proc fakeinhibition(){
+    //if I just set it
+    firstring=0
+    position=.5
+    switchsides=0
+    if(firstring){
+        if(switchsides==0){
+            num1=0
+            num2=3
+        }else{
+            num1=3
+            num2=0
+        }
+    }else{
+        if(switchsides==0){
+            num1=6
+            num2=12
+        }else{
+            num1=12
+            num2=6
+        }
+    }
+    for idend=0,numFirst-1{
+        
+        access SAC[chosenSAC].dend[idend]
+            
+        temp=new AlphaSynapseG(abs(position))
+        //if I just set it
+        /*
+        shifty=65
+        if(idend==num1){
+            temp.onset=((Xorg.x[chosenSAC]))*bipspeed +50+dendL +shifty //"right"
+        }else{
+            temp.onset=((Xorg.x[chosenSAC]))*bipspeed +50+dendL -shifty
+        }
+        */
+        temp.onset=0
+        //temp.onset=((x3d(0)+(x3d(1)-x3d(0)/2))*bipspeed +50+dendL) //where it is located
+        //((Xorg.x[chosenSAC]))*bipspeed +50+dendL //whevever the middle gets hit
+        //temp.tau=fitau
+        //temp.gmax=figmax
+        temp.e=fie
+        ConductanceVectorList.object(idend).play(&temp.g, .025)
+        
+        fakeinhibitions.append(temp)
+    }
 }
+
+
 proc fauxconnect(){
     FauxRing[chosenSAC]=new fauxring()
     for ivari=0, numOutside-1{
@@ -152,9 +219,6 @@ proc fauxconnect(){
         SAC[chosenSAC].fauxvaricurrent.append(temp)
     }
 }
-
-
-
 
 
 proc clampsetup(){
@@ -280,6 +344,9 @@ proc placeSAC(){
     if(DingNetwork){
         expnumSACs=7
     }
+    if(fakenetwork){
+        expnumSACs=1
+    }
     numSACs=expnumSACs
     
     thetas = new Vector(numSACs)
@@ -360,7 +427,15 @@ proc placeSAC(){
         if(ThreeSACVGCCcheck){
             Xorg.x[2]=-120
         }
-    }else  {
+    }else if(fakenetwork){
+        Xorg=new Vector(numSACs)
+        Yorg=new Vector(numSACs)   
+        numSACs=expnumSACs
+        centerX=dendL*2
+        centerY=(sin (PI/3)*140*2)
+        Xorg.x[0]=centerX
+        Yorg.x[0]=centerY
+    }else {
         Xorg= new Vector(numSACs,0)
         Yorg= new Vector(numSACs,0)
     }
