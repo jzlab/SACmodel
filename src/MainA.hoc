@@ -742,6 +742,7 @@ if(SingleSACExperiment){
     }else{
     }
     run()
+
     //--------recording resulting conductances
     strdef st
     if(DingNetwork||network2){
@@ -766,6 +767,25 @@ if(SingleSACExperiment){
     
     //objective 3
     fileConductanceBubbleGraph() 
+    //just a sample output
+    inhibitvecR(SAC[chosenSAC].ISACrecList.object(i).size()) 
+    inhibitvecL(SAC[chosenSAC].ISACrecList.object(i).size())
+    for i=0, ISACrecList.count()-1{
+        if(SAC[chosenSAC].fromList.object(i).x[2]==0){  //right
+            inhibitvecR.add(SAC[chosenSAC].ISACrecList.object(i))
+        }else if(SAC[chosenSAC].fromList.object(i).x[2]==3){ //left
+            inhibitvecL.add(SAC[chosenSAC].ISACrecList.object(i))
+        }
+    }
+    for i=0, IBIPrecList.count(){
+        belongs=0
+        belongstobranch(i, 0)
+    }
+    inhibitvecL.plot(g6,1,1)
+    excitevecL.plot(g6,1,1)
+    inhibitvecR.plot(g7,1,1)
+    excitevecR.plot(g7,1,1)
+    graphG6()
 
     //objective 1.0
     fileV_CAI_TuningCurves()

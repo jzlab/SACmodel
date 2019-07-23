@@ -297,7 +297,7 @@ proc clampsetup(){
     clamps[1].amp[2]=-70
 }
 
-proc belongstobranch(){
+proc belongstobranch(){  //Does bip $1 belong to branch $2 (0-5)
     n= int($1/2)
     gate= $2*8+6*7
     for (i=3; i>=0; i=i-1){
