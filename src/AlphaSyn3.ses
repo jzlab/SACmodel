@@ -1,6 +1,6 @@
 {load_file("nrngui.hoc")}
 objectvar save_window_, rvp_
-objectvar scene_vector_[14]
+objectvar scene_vector_[13]
 objectvar ocbox_, ocbox_list_, scene_, scene_list_
 {ocbox_list_ = new List()  scene_list_ = new List()}
 {pwman_place(0,0,0)}
@@ -8,14 +8,13 @@ objectvar ocbox_, ocbox_list_, scene_, scene_list_
 save_window_ = new Graph(0)
 save_window_.size(25,275,16.6667,183.333)
 scene_vector_[2] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 20, 21, 300.48, 200.32)}
+{save_window_.view(25, 16.6667, 250, 166.667, 0, 1, 300.48, 200.32)}
 }
 {
 save_window_ = new Graph(0)
 save_window_.size(25,275,16.6667,183.333)
 scene_vector_[3] = save_window_
 {save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-save_window_.label(0, 1, "g6", 2, 1, 0, 1, 2)
 }
 {
 save_window_ = new Graph(0)
@@ -28,21 +27,18 @@ save_window_ = new Graph(0)
 save_window_.size(25,275,16.6667,183.333)
 scene_vector_[5] = save_window_
 {save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-save_window_.label(0, 1, "g7", 2, 1, 0, 1, 4)
 }
 {
 save_window_ = new Graph(0)
 save_window_.size(25,275,16.6667,183.333)
 scene_vector_[6] = save_window_
 {save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-save_window_.label(0, 1, "g8", 2, 1, 0, 1, 5)
 }
 {
 save_window_ = new Graph(0)
 save_window_.size(25,275,16.6667,183.333)
 scene_vector_[7] = save_window_
 {save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-save_window_.label(0, 1, "g9", 2, 1, 0, 1, 6)
 }
 {
 save_window_ = new Graph(0)
@@ -52,121 +48,9 @@ scene_vector_[8] = save_window_
 }
 {
 save_window_ = new Graph(0)
-save_window_.size(-3.14159,3.14159,0,2)
+save_window_.size(25,275,16.6667,183.333)
 scene_vector_[9] = save_window_
-{save_window_.view(-3.14159, 0, 6.28319, 2, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(-3.14159,3.14159,-60,-10)
-scene_vector_[10] = save_window_
-{save_window_.view(-3.14159, -60, 6.28319, 50, 3, 47, 300.48, 200.32)}
-save_window_.label(0, 1, "g10", 2, 1, 0, 1, 6)
-}
-{
-xpanel("Params", 0)
-expcontrast = 0.4
-xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
-bipG1 = 0.4
-xvalue("bipG1","bipG1", 0,"", 0, 0 )
-bipG2 = 0.08
-xvalue("bipG2","bipG2", 0,"", 0, 0 )
-dendepas = -60
-xvalue("E pas","dendepas", 1,"update()", 0, 0 )
-dendgpas = 0.0008
-xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
-cachannelshift = 20
-xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
-cachannelg = 0.002
-xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
-kv_gmax = 0
-xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
-xbutton("CurrentvsContrast","CurrentvsContrast()")
-xpanel(400,400)
-}
-{
-xpanel("Params", 0)
-expcontrast = 0.4
-xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
-bipG1 = 0.4
-xvalue("bipG1","bipG1", 0,"", 0, 0 )
-bipG2 = 0.08
-xvalue("bipG2","bipG2", 0,"", 0, 0 )
-dendepas = -60
-xvalue("E pas","dendepas", 1,"update()", 0, 0 )
-dendgpas = 0.0008
-xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
-cachannelshift = 20
-xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
-cachannelg = 0.002
-xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
-kv_gmax = 0
-xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
-xbutton("CurrentvsContrast","CurrentvsContrast()")
-xpanel(400,400)
-}
-{
-xpanel("Params", 0)
-expcontrast = 0.4
-xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
-bipG1 = 0.4
-xvalue("bipG1","bipG1", 0,"", 0, 0 )
-bipG2 = 0.08
-xvalue("bipG2","bipG2", 0,"", 0, 0 )
-dendepas = -60
-xvalue("E pas","dendepas", 1,"update()", 0, 0 )
-dendgpas = 0.0008
-xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
-cachannelshift = 20
-xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
-cachannelg = 0.002
-xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
-kv_gmax = 0
-xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
-xbutton("CurrentvsContrast","CurrentvsContrast()")
-xpanel(400,400)
-}
-{
-xpanel("Params", 0)
-expcontrast = 0.4
-xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
-bipG1 = 0.4
-xvalue("bipG1","bipG1", 0,"", 0, 0 )
-bipG2 = 0.08
-xvalue("bipG2","bipG2", 0,"", 0, 0 )
-dendepas = -60
-xvalue("E pas","dendepas", 1,"update()", 0, 0 )
-dendgpas = 0.0008
-xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
-cachannelshift = 20
-xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
-cachannelg = 0.002
-xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
-kv_gmax = 0
-xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
-xbutton("CurrentvsContrast","CurrentvsContrast()")
-xpanel(400,400)
-}
-{
-xpanel("Params", 0)
-expcontrast = 0.4
-xvalue("Contrast","expcontrast", 1,"update()", 0, 0 )
-bipG1 = 0.4
-xvalue("bipG1","bipG1", 0,"", 0, 0 )
-bipG2 = 0.08
-xvalue("bipG2","bipG2", 0,"", 0, 0 )
-dendepas = -60
-xvalue("E pas","dendepas", 1,"update()", 0, 0 )
-dendgpas = 0.0008
-xvalue("G pas","dendgpas", 1,"update()", 0, 0 )
-cachannelshift = 20
-xvalue("cachannelshift","cachannelshift", 1,"update()", 0, 0 )
-cachannelg = 0.002
-xvalue("cachannelg","cachannelg", 1,"update()", 0, 0 )
-kv_gmax = 0
-xvalue("kv_gmax","kv_gmax", 1,"update()", 0, 0 )
-xbutton("CurrentvsContrast","CurrentvsContrast()")
-xpanel(400,400)
+{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
 }
 {
 save_window_ = new Graph(0)
@@ -192,41 +76,9 @@ save_window_.addexpr("SAC[0].dend[51].v(.5)", 9, 7, 0.571053, 0.9, 2)
 }
 {
 save_window_ = new Graph(0)
-save_window_.size(0,800,-80,40)
+save_window_.size(-3.14159,3.1416,-5.96046e-08,3)
 scene_vector_[12] = save_window_
-{save_window_.view(0, -80, 800, 120, 809, 555, 300.48, 200.32)}
-graphList[0].append(save_window_)
-save_window_.save_name("graphList[0].")
-save_window_.addexpr("SAC[0].dend[32].v(.5)", 1, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[4].dend[45].v(.5)", 3, 1, 0.8, 0.9, 2)
+{save_window_.view(-3.14159, -5.96046e-08, 6.28319, 3, 260, 39, 350.4, 200.32)}
 }
-{
-save_window_ = new Graph(0)
-save_window_.size(0,800,-80,40)
-scene_vector_[13] = save_window_
-{save_window_.view(0, -80, 800, 120, 42, 310, 643.2, 288.64)}
-graphList[0].append(save_window_)
-save_window_.save_name("graphList[0].")
-save_window_.addexpr("v(.5)", 0, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[2].dend[78].v(.5)", 5, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[1].dend[69].v(.5)", 6, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[6].dend[61].v(.5)", 9, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[0].dend[6].v(.5)", 1, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[0].dend[0].v(.5)", 7, 1, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[0].dend[19].v(.5)", 1, 8, 0.8, 0.9, 2)
-save_window_.addexpr("SAC[0].dend[45].v(.5)", 1, 1, 0.8, 0.9, 2)
-}
-save_window_ = scene_vector_[6]
-{save_window_.view(0, 0, 800, 1.2, 824, 644, 350.4, 200.32)}
-save_window_ = scene_vector_[7]
-{save_window_.view(0, 800, 1, 5.5, 100, 450, 350.4, 200.32)}
-save_window_ = scene_vector_[10]
-{save_window_.view(0, 800, 1, 5.5, 100, 450, 350.4, 200.32)}
-save_window_ = scene_vector_[3]
-{save_window_.view(0, 800, 1, 5.5, 800, 400, 350.4, 200.32)}
-save_window_ = scene_vector_[5]
-{save_window_.view(0, 0, 800, 7.3, 691, 406, 350.4, 200.32)}
-save_window_ = scene_vector_[9]
-{save_window_.view(-3.14159, -2.98023e-08, 6.28319, 3, 150, 50, 350.4, 200.32)}
 objectvar scene_vector_[1]
 {doNotify()}

@@ -95,17 +95,17 @@ dendL=140
 dendD1=0.2
 dendgpas=expdendgpas
 dendepas=-60//-70//
-dendRa=100
+dendRa=100  //axial resistivity
 
 for igen=0,numGen-1{
 numDend+=numFirst*2^(igen)
 }
 
-numOutside=numFirst*2^(numGen-1)
+numOutside=numFirst*2^(numGen-1) //48
 numInside=numDend-numOutside //42
 
 for igen=0, 1{
-    numInside2+=numFirst*2^(igen) //19
+    numInside2+=numFirst*2^(igen) //19 //when do I use this?
 }
 
 
@@ -116,26 +116,23 @@ bipMaxDist=75
 
 bipspeed=expbipspeed
 
+variDensity=15
+
 //SAC building
-objectvar thetas
-print expnumSACs, "=expnumSACs"
-numSACs=expnumSACs
-print numSACs, "=numSACs"
-thetas = new Vector(numSACs)
-    for i=0,numSACs-1{
-        thetas.x[i]=expangle
-    }
+
 SACmaxDist=15
+//complex cl channel
 clchannelthres=.2//.008
 clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
 clchannelamp=8//.09
 clchanneltau1=10
 clchanneltau2=3
 clchannelgbar=100
+//calrgc vgcc
 cachannelshift=15//10
 cachannelg=.002//.005
 cachanneltranslation=0
-    //makes the i for -40 look like the i for -50
+   
 //K Channel
 kv_gmax=0//50
 kv_n_50=-20
@@ -183,7 +180,7 @@ CalciumConductance=.05
     chosenSAC=0
     objectvar testg, testg2, g6, g5, g7, g8, g9, g4, g10,g12, testg4, testg3, testg5, SAC[numSACs], fileob, g, voltagevec, timevec, maxdifvec, clamps[numclamps], clampcurrent, without[top], with[top], FauxRing[2], simplething, emptyvec, vspot[top]
     objectvar voltagejumps, randSAC, Gang, temp, currentmaxs, differencemin, List1, List2, temp2, difference[top], Simple[numSimp], vec1, vec2, randSACs, randCon
-    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec, ISACLrecList, ISACRrecList, inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec, whichSACR, whichSACL, histvec, whichconnection, whichbip, whichdend, imagbip, imagbipselect, fakeinhibitions, whichSACR1, whichSACL1, whichSACR2, whichSACL2, ISACL1recList, ISACR1recList, ISACL2recList, ISACR2recList, inhibitvecL1, inhibitvecR1, inhibitvecL2, inhibitvecR2, ConductanceVectorList, inhibitveclist
+    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec, ISACLrecList, ISACRrecList, inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec, whichSACR, whichSACL, histvec, whichconnection, whichbip, whichdend, imagbip, imagbipselect, fakeinhibitions, whichSACR1, whichSACL1, whichSACR2, whichSACL2, ISACL1recList, ISACR1recList, ISACL2recList, ISACR2recList, inhibitvecL1, inhibitvecR1, inhibitvecL2, inhibitvecR2, ConductanceVectorList, inhibitveclist, thetas
     testg=new Vector()
     testg2=new Vector()
     testg3=new Vector()
@@ -274,7 +271,7 @@ objectvar ranCord, freedom
     //gui
     if(1==0){
 		xpanel("Params")
-			xvalue("Contrast", "expcontrast" , 1, "update()")
+			xvalue("Contrast", "contrast" , 1, "update()")
             xvalue("bipG1")
             xvalue("bipG2")
 			xvalue("E pas", "dendepas" , 1, "update()")
@@ -292,75 +289,7 @@ objectvar ranCord, freedom
     }
     
     //------------------------------------------EXPERIMENTS
-if(SingleSACFakeNetwork){
-    chosenSAC=0
-    placeSAC()
-    objectvar SAC[numSACs]
-    build()
-    setg()
-    print " we have built"
-    delay()
-    print " contrast, speed: ", expcontrast, expbipspeed
-    shifty=0
-    fakeinhibition()
-    xopen("AlphaSyn3.ses")
-    numb= SAC[chosenSAC].bipSynapses.count() //recording excitatory currents
-    for i=0, numb-1{
-        temp=new Vector()
-        temp.record(&SAC[chosenSAC].bipSynapses.object(i).g,1) //current or conductance?
-        IBIPrecList.append(temp)
-    }
-    if(fakenetwork){
-        for (i=0;i<=5;i=i+1){
-            if(i<3){
-                inhibitvecR.record(&fakeinhibitions.object(i).g,1)
-            }else{
-                inhibitvecL.record(&fakeinhibitions.object(i).g,1)
-            }
-        }
-    }
-    print "prepared correctly"
-    run()
 
-        for k=0, IBIPrecList.count()-1 {
-        belongs=0
-        belongstobranch(k, 0)
-        if(belongs==1){
-            //add
-            excitevecR= emptyvec.add(IBIPrecList.object(k))
-            whichbip.append(k)
-        } else{
-            belongstobranch(k, 3)
-            if(belongs==1){
-                //add
-                excitevecL= emptyvec.add(IBIPrecList.object(k))
-                whichbip.append(k)
-            }
-        }
-   
-    }
-    print "okay with building excite vectors"
-    //graphing
-    testg=excitevecL
-    testg2=excitevecR
-    inhibitvecL.plot(g6,1,1)
-    inhibitvecR.plot(g7,1,1)
-    graphG6()
-    graphG7()
-    graphAngleCA()
-    for w=0, numOutside-1{
-        num= SAC[chosenSAC].CAIrecList.object(w).max()
-        num2=SAC[chosenSAC].VrecList.object(w).max()
-        caivec.append(num)
-        voltagevec.append(num2)
-    }
-
-    print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
-    print "contrast, speed, shifty: ", expcontrast, expbipspeed, shifty
-    fileob.aopen("SingleSACFakeNetwork.txt")
-    fileob.printf("%g %g \n", shifty,(caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27]) )
-    fileob.close()
-}
 
 if(GanglionExperiment){
     //-----------------------------------------------BUILDING PHASE
@@ -539,52 +468,19 @@ if(GanglionExperiment){
         }
     }
 }
-if(clchannelcheck){
-    build()
-    delay()
-    connecting()
-
-    a=0                         //cd synapse onto ab
-    b=0
-    c=SAC[a].fromList.object[b].x[0]
-    d=SAC[a].fromList.object[b].x[1]
-    testg.record(&SAC[a].receivesCl.object(b).capre,1)
-    run()
-    graphG5()
-    graphG6()
-}
-if(ThreeSACVGCCcheck){
-    build()
-    delay()
-    savevariangle()
-    connecting()  //Only one connects to the others
-
-    chosenSAC=0
-    graphAngleCA()
-    for w=0, SAC[chosenSAC].variAngle.size()-1{
-        num= SAC[chosenSAC].CAIrecList.object(w).max()
-        voltagevec.append(num)
-    }
-
-    fileob.wopen("SingleSACExperimentVvsAngle.txt")
-    fileob.printf("Maximum_Calcium_Concentration_Across_Angles \n")
-    fileob.printf("Angle Max_CAi \n")
-    for i=0,SAC[chosenSAC].variAngle.size()-1{
-        fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[i],voltagevec.x[i] )
-    }
-    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0] )
-    fileob.printf("%g %g \n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1] )
-    fileob.close()
-}                                                   
+                                                  
 if(TwoSACLeeExperiment){
+    //objective 2 probably workls
     print "TwoSACLeeExperiment"
     takingtrace=1
-    vto=-25
+    vto=-25    //how we're looping isn't great maybe we can fix that
 
+    placeSAC()
+    objectvar SAC[numSACs]
     build()
     setg()
     connecting()
-    if(1==1){
+    
         //clamp setup 
         
         if(network2){
@@ -668,89 +564,48 @@ if(TwoSACLeeExperiment){
             fileob.close()
         }
 
-    }  
+
     
 }
-if(TwoSACLeeExperimentSimple){
-    Simple[0]=new simple()
-    Simple[1]=new simple()
-    access Simple[1].soma
-    temp2=new ComplexCl2(.5) 
-    temp2.thres=clchannelthres
-    setpointer temp2.capre, Simple[0].soma.cai(.5)
-
-    del=500
-    dur=200
-    access Simple[1].soma
-    clamps[0]=new VClamp(.5)
-    clamps[0].dur[0]=tstop
-    clamps[0].amp[0]=0
-
-    access Simple[0].soma
-    clamps[1]=new VClamp(.5)
-    clamps[1].dur[0]=del
-    clamps[1].amp[0]=-70
-    clamps[1].dur[1]=dur
-    clamps[1].dur[2]=tstop-del-dur
-    clamps[1].amp[2]=-70
-
-
-    clampcurrent.record(&clamps[0].i,1) //record from postsyn soma
-    
-    for i2=0, 7{              
-            clamps[1].amp[1]=-65+10*i2
-            run()
-            voltagejumps.append(clamps[1].amp[1])
-            currentmaxs.append (clampcurrent.max(4, tstop)-clampcurrent.x[del/2])//(Simple[0].CAIrecList.object(0).max(4, tstop))
-            
-            }
-            fileob.wopen("TwoSACExperimentLeeImaxes.txt")
-            for i=0, currentmaxs.size()-1{
-                fileob.printf("%g %g \n", voltagejumps.x[i], currentmaxs.x[i])
-            }
-            fileob.close()
-
-            graphG5()
-            graphG4()
-
-}
-
 
 if (SingleSACDingExperiment){
+    //objective 1.5
     takingtrace=0  //are we taking a trace
     whichvar=65-numInside    // if so, of which varicosity
     tracepd=0 //if so, in the preferred direction or no?
 
+    placeSAC()
+    objectvar SAC[numSACs]
     build()
+    setg()
     savetrueangle()
-    choiceSAC=0
 
     if (takingtrace) {        //how we loop
         startl=whichvar
         finishl=whichvar
     }else{
         startl=0
-        finishl=(SAC[choiceSAC].trueAngle.size()-1)/numFirst
+        finishl=numOutside/numFirst  //we divide by numFirst because it just repeats
     }
 
     for k=startl, finishl{
-        thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)
-        print "theta is ", thetas.x[choiceSAC] 
+        thetas.x[chosenSAC]= SAC[chosenSAC].trueAngle.get(k)
+        print "theta is ", thetas.x[chosenSAC] 
         delay()
         run()
-        pdCAi=SAC[choiceSAC].CAIrecList.object(k).max() //changed it
+        pdCAi=SAC[chosenSAC].CAIrecList.object(k).max() //changed it
         print pdCAi
         if(tracepd){break} //what we are tracing
 
-        if(SAC[choiceSAC].trueAngle.get(k)>0){
-            thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)-PI
+        if(SAC[chosenSAC].trueAngle.get(k)>0){
+            thetas.x[chosenSAC]= SAC[chosenSAC].trueAngle.get(k)-PI
         }else{
-            thetas.x[choiceSAC]= SAC[choiceSAC].trueAngle.get(k)+PI
+            thetas.x[chosenSAC]= SAC[chosenSAC].trueAngle.get(k)+PI
         }
-        print "theta is ", thetas.x[choiceSAC]
+        print "theta is ", thetas.x[chosenSAC]
         delay()
         run()
-        ndCAi=SAC[choiceSAC].CAIrecList.object(k).max()  //changed it 
+        ndCAi=SAC[chosenSAC].CAIrecList.object(k).max()  //changed it 
         print ndCAi
         dsi=(pdCAi-ndCAi)/pdCAi
         print"dsi", dsi
@@ -758,8 +613,8 @@ if (SingleSACDingExperiment){
     }
     if(takingtrace){  //what we graph
         fileob.wopen("SingleSACDingExperimentCaTrace.txt")
-        for i=0, SAC[choiceSAC].CAIrecList.object(k).size()-1{
-            fileob.printf("  %g \n", SAC[choiceSAC].CAIrecList.object(k).x[i] ) //changed it
+        for i=0, SAC[chosenSAC].CAIrecList.object(k).size()-1{
+            fileob.printf("  %g \n", SAC[chosenSAC].CAIrecList.object(k).x[i] ) //changed it
         }
         fileob.close()
     }else{
@@ -774,17 +629,7 @@ if (SingleSACDingExperiment){
 }
 
 if(SingleSACExperiment){
-    expand=0
-    /*
-    if (batch==0) {
-        Sim_Exp_Num=0
-        expbipspeed=.5
-        expcontrast=.42
-    }else{
-        Sim_Exp_Num=10
 
-    }
-    */
     DingNetworkLooping=0
     if(DingNetworkLooping){
         if (batch>0){
@@ -794,8 +639,8 @@ if(SingleSACExperiment){
                     for k=0,1{
                         DingNetwork=k
                         fakenetwork=0^k
-                        expbipspeed=i
-                        expcontrast=j 
+                        bipspeed=i
+                        contrast=j 
                         counter=counter+1
                         if(counter==batch){
                             break
@@ -816,7 +661,7 @@ if(SingleSACExperiment){
         if (batch>0){
             counter=0
             for k=0,13{
-                shifty=-65+k*13
+                shiftt=-65+k*13
                 counter=counter+1
                 if(counter==batch){
                     break
@@ -825,7 +670,7 @@ if(SingleSACExperiment){
         }
     }
     FakeNetworkLoopingPosition=0
-    if(FakeNetworkLoopingPosition){
+    if(FakeNetworkLoopingPosition){ //kind of a mess
         if (batch>0){
             counter=0
             for j=0,1{
@@ -854,333 +699,83 @@ if(SingleSACExperiment){
         }
     }
     placeSAC()
-    objectvar SAC[numSACs]
+    objectvar SAC[numSACs]  //now that we have a new numSACS
     build()
     setg()
-    print " we have built"
     delay()
-    print " 2 contrast, speed, shifty, firstring, position, DingNetwork, fakenetwork: ", expcontrast, expbipspeed, shifty, firstring, position, DingNetwork, fakenetwork
+    print " contrast=", contrast," speed=",bipspeed, "shifty=",shifty, " DingNetwork=", DingNetwork,"fakenetwork= ", fakenetwork
 
-    savevariangle()
-    if(1==1){
-    if (network1||network2){
+    saveendangle()  //save the angle relative to the direction of motion and our nullpref
+    //bring in the inhibition
+    if (network2||DingNetwork){
         connecting()
         print " we have connected"
-        chosenSAC= 4//56//?//MAKE EQUATION
-    }else if(DingNetwork){
-        connecting()
-        print " we have connected"
-        chosenSAC=0
+        
+    } else if (fakenetwork){
+        fakeinhibition2()
     }else{
-        chosenSAC=0
     }
-    if (fakenetwork){
-        //make the g values into vectors
-        fileob.ropen("ConductanceVectorRmaster.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fileob.ropen("ConductanceVectorR1master.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fileob.ropen("ConductanceVectorL1master.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fileob.ropen("ConductanceVectorLmaster.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fileob.ropen("ConductanceVectorL2master.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fileob.ropen("ConductanceVectorR2master.txt")
-        temp=new Vector()
-        temp.vread(fileob)
-        ConductanceVectorList.append(temp)
-        fileob.close() 
-        fakeinhibition()
-    }
-    //fauxconnect()
+    
 
-    //testg3=SAC[chosenSAC]. MrecList().object(27)
-    //testg=SAC[chosenSAC].MrecList().object(3)
-
-     //graphG7()
 
     xopen("AlphaSyn3.ses")
     if(1==1){
-    //testg.record(&SAC[0].bipSynapses.object(83).i,1)  
-    //timevec.record(&t)
-    print "3 contrast, speed: ", expcontrast, expbipspeed
-    numb= SAC[chosenSAC].bipSynapses.count() //recording excitatory currents
+    numb= SAC[chosenSAC].bipSynapses.count() //recording excitatory g
     for i=0, numb-1{
         temp=new Vector()
         temp.record(&SAC[chosenSAC].bipSynapses.object(i).g,1) //current or conductance?
         IBIPrecList.append(temp)
     }
-    if(network1||network2||DingNetwork){
+    if(network1||network2||DingNetwork){  //recording inhibitory g
         numc=SAC[chosenSAC].receivesCl.count() //how many inputs are we getting from other SACs
         for i=0, numc-1{
             temp=new Vector()
             temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
             ISACrecList.append(temp)
         }
-    }
-    if(fakenetwork){
-        for i=0, numFirst-1{
+    }else if(fakenetwork){  //-------record fake inhibitory g
+        for i=0, fakeinhibitions.count()-1{
             temp=new Vector()
             temp.record(&fakeinhibitions.object(i).g,1)
-            inhibitveclist.append(temp)
+            ISACrecList.append(temp)
         }
-    }
-    print "prepared correctly"
-    //SPECIAL TRACES\
-    if(network1||network2||DingNetwork){
-        access SAC[chosenSAC].dend[3]
-        ISACLpos=x3d(0)-((x3d(0)-x3d(1))/2)
-        access SAC[chosenSAC].dend[0]
-        ISACRpos=x3d(0)-((x3d(0)-x3d(1))/2)
-        for i=0, SAC[chosenSAC].fromList.count()-1{  //-------record the g at various places (maybe record them all the time?)
-            m=SAC[chosenSAC].fromList.object(i).x[0] //what SAC are you from?
-            if (SAC[chosenSAC].fromList.object(i).x[2]==3){ //left
-                if(m==4){b=i}
-                whichSACL.append(n)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACLrecList.append(temp)
-            }
-            if (SAC[chosenSAC].fromList.object(i).x[2]==0){ //right //if you synapse onto dend 0
-                whichSACR.append(m)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACRrecList.append(temp)
-            }
-            if (SAC[chosenSAC].fromList.object(i).x[2]==1){ //right1 //if you synapse onto dend 1
-                whichSACR.append(m)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACR1recList.append(temp)
-            }
-            if (SAC[chosenSAC].fromList.object(i).x[2]==2){ //left1 
-                whichSACL1.append(m)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACL1recList.append(temp)
-            }
-            if (SAC[chosenSAC].fromList.object(i).x[2]==4){ //left2 
-                whichSACL2.append(m)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACL2recList.append(temp)
-            }
-            if (SAC[chosenSAC].fromList.object(i).x[2]==5){ //right2
-                whichSACR2.append(m)
-                temp=new Vector()
-                temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
-                ISACR2recList.append(temp)
-            }
-        }
-        //obj= histvec.hist(whichSAC, .5,6, 1) //bin where they are from
-         //print histvec
-         print "whichSACR" 
-         whichSACR.printf()
-         print "whichSACL" 
-         whichSACL.printf()
-        testg3.record(&SAC[chosenSAC].receivesCl.object(0).i,1)
-    
-    //Checking capre to postg
-        a=0
-
-        c=SAC[a].fromList.object[b].x[0]
-        d=SAC[a].fromList.object[b].x[1]
-        //testg.record(&SAC[c].soma.i(.5),1)
-        //testg.record(&SAC[a].dend[42+b].v(.5),1)
-        print "abcd: ",  "SAC ", a, "connection ", b, " on dend 3 receives input from SAC ", c, " outer dend ", d
-
-        testg3.record(&SAC[a].receivesCl.object(b).capre, 1)
-        testg4.record(&SAC[a].receivesCl.object(b).probrelease,1)
-        testg5.record(&SAC[a].receivesCl.object(b).numreleased,1)
+    }else{
     }
     run()
-    if(network1||network2||DingNetwork){
-
-        testg3.plot(g8,1,1)
-        testg4.plot(g9,1,1)
-        testg5.plot(g10,1,1)
-        graphG8()
-        graphG9()
-        graphG10()
-    }
-    /*
-    g12=new Graph()
-    Ggraph(3)
-    Ggraph(12)
-    Ggraph(13)
-    for i=30, 33{
-        Ggraph(i)
-    }
-    Ggraphc(0)
-    Ggraphc(6)
-    Ggraphc(7)
-    for i=18, 21{
-        Ggraphc(i)
-    }
-    */
-   
-   
-    print "we ran"
-
-    if(network1||network2||DingNetwork){
-        
-  
-         for i=1,ISACLrecList.count()-1{
-            temp=new Vector()
-            temp=ISACLrecList.object(0).add(ISACLrecList.object(i))
-            inhibitveclist.append(temp)
+    //--------recording resulting conductances
+    strdef st
+    if(DingNetwork||network2){
+        for i=0, ISACrecList.count()-1{
+            sprint(st, "ConductanceVector%d.txt", i)  
+            fileob.wopen(st)
+            ISACrecList.o(i).vwrite(fileob)
+            fileob.close()
         }
-        for i=1,ISACRrecList.count()-1{
-            temp=new Vector()
-            temp=ISACRrecList.object(0).add(ISACRrecList.object(i))
-            inhibitveclist.append(temp)
-        }
-        for i=1,ISACL1recList.count()-1{
-            temp=new Vector()
-            temp=ISACL1recList.object(0).add(ISACL1recList.object(i))
-            inhibitveclist.append(temp)
-        }
-        for i=1,ISACR1recList.count()-1{
-            temp= new Vector()
-            temp=ISACR1recList.object(0).add(ISACR1recList.object(i))
-            inhibitveclist.append(temp)
-        }
-        for i=1,ISACL2recList.count()-1{
-            temp= new Vector()
-            temp=ISACL2recList.object(0).add(ISACL2recList.object(i))
-            inhibitveclist.append(temp)
-        }
-        for i=1,ISACR2recList.count()-1{
-            temp =new Vector()
-            temp=ISACR2recList.object(0).add(ISACR2recList.object(i))
-            inhibitveclist.append(temp)
-        }
-    }else if(fakenetwork){
-
-    }else{
-        inhibitvecL=new Vector(tstop,0)
-        inhibitvecR=new Vector(tstop,0)
+        print "we have ", ISACrecList.count()-1, "conductance vectors"
     }
-    
-    print "ready to record excitatory"
-
-    for k=0, IBIPrecList.count()-1 {
-        belongs=0
-        belongstobranch(k, 0)
-        if(belongs==1){
-            //add
-            excitevecR= emptyvec.add(IBIPrecList.object(k))
-            whichbip.append(k)
-        } else{
-            belongstobranch(k, 3)
-            if(belongs==1){
-                //add
-                excitevecL= emptyvec.add(IBIPrecList.object(k))
-                whichbip.append(k)
-            }
-        }
-   
+    //--------first pass analysis
+    for i=0, numOutside-1{
+        caivec.append(SAC[chosenSAC].CAIrecList.object(i).max())
     }
-    print "okay with whichbip"
-    for i=0, numDend*2-1{
-        imagbip.append(i)
-    }
-    for k=0, imagbip.size()-1{
-        belongs=0
-        belongstobranch(k, 0)
-        if(belongs==1){
-            //add
-            imagbipselect.append(k)
-        }else{
-            belongstobranch(k, 3)
-            if(belongs==1){
-                //add
-                imagbipselect.append(k)
-            }
-        }
-    }
-
-    for which=0, imagbipselect.size()-1{
-        if((imagbipselect.x[which]%2==0)&&(imagbipselect.x[which]/2)>=numInside2){
-            whichdend.append(imagbipselect.x[which]/2)
-        }
-        
-    }
-    print "excitatory recorded"
-    //testg=IBIPrecList.object(0)
-    
-    if(network1||network2||DingNetwork){
-        for i=1,numc-1{
-            inhibitvec=ISACrecList.object(0).add(ISACrecList.object(i))
-        }
-        testg2=ISACrecList.object(0)
-    }
-    
-    testg=excitevecL
-    testg2=excitevecR
-    if(network1||network2||DingNetwork){
-        inhibitveclist.o(0).plot(g7,1,1)
-        inhibitveclist.o(3).plot(g6,1,1)
-        inhibitveclist.o(1).plot(g7,1,1)
-        inhibitveclist.o(2).plot(g6,1,1)
-        inhibitveclist.o(5).plot(g7,1,1)
-        inhibitveclist.o(4).plot(g6,1,1)
-    }
-    graphG6()
-    graphG7()
-    print "added correctly"
-    //testg=SAC[chosenSAC].fauxvaricurrent.object(30)
-    //current trace graph
-   //graphG8()
-   //graphG7()
-    /*
-    fileob.wopen("SingleSACExperimentITrace.txt") 
-    for i=0, testg.size()-1{
-        fileob.printf("%g \n", testg.x[i])
-    }
-    fileob.close()
-    */
-
-    //maxcalcium vs angle
-    
-    //graphAngleCA()
-    //graphAngleV()
-
-
-    for w=0, SAC[chosenSAC].variAngle.size()-1{
-        if(expand){
-            num=SAC[chosenSAC].fauxvaricurrent.object(w).max()
-        }else{
-            num= SAC[chosenSAC].CAIrecList.object(w).max()
-            num2=SAC[chosenSAC].VrecList.object(w).max()
-        }
-        caivec.append(num)
-        voltagevec.append(num2)
-    }
- 
-    Dend1=27 //LEFT
-    Dend2=3 //RIGHT
-
     graphAngleCA()
     graphAngleV()
-    print "DSI: ", (caivec.x[3]-caivec.x[27])/(caivec.x[3]+caivec.x[27])
-    print "contrast, speed, DingNetwork, fakenetwork: ", expcontrast, expbipspeed, DingNetwork,fakenetwork
+    SAC[chosenSAC].nullpref.x[0]=Dend1
+    SAC[chosenSAC].nullpref.x[1]=Dend2
+    print "DSI: ", (caivec.x[Dend1]-caivec.x[Dend2])/(caivec.x[Dend1]+caivec.x[Dend2])
+    print "contrast="expcontrast,  "speed=",bipspeed, "DingNetwork=",DingNetwork, "fakenetwork=",  fakenetwork
+    
+    //objective 3
+    fileConductanceBubbleGraph() 
+
+    //objective 1.0
+    fileV_CAI_TuningCurves()
+    fileEndTraces()
+
+
+
+ 
+    //--------Come back to this
+
     
     if(0==1&&(FakeNetworkLoopingPosition||FakeNetworkLoopingTimes)){
         
@@ -1197,27 +792,8 @@ if(SingleSACExperiment){
     }
     fileob.close()
 
-    //--------recording conductances
-    if(DingNetwork){
-        fileob.wopen("ConductanceVectorR.txt")
-        inhibitveclist.o(0).vwrite(fileob)
-        fileob.close()
-        fileob.wopen("ConductanceVectorR1.txt")
-        inhibitveclist.o(1).vwrite(fileob)
-        fileob.close()
-        fileob.wopen("ConductanceVectorR2.txt")
-        inhibitveclist.o(5).vwrite(fileob)
-        fileob.close()
-        fileob.wopen("ConductanceVectorL.txt")
-        inhibitveclist.o(3).vwrite(fileob)
-        fileob.close()
-        fileob.wopen("ConductanceVectorL1.txt")
-        inhibitveclist.o(2).vwrite(fileob)
-        fileob.close()
-        fileob.wopen("ConductanceVectorL2.txt")
-        inhibitveclist.o(4).vwrite(fileob)
-        fileob.close()
-    }
+   
+
     
     //SPECIAL TRACES SECTION
     if(0==1){
@@ -1230,15 +806,7 @@ if(SingleSACExperiment){
     fileob.close()
     }
     if(0==1){
-    fileob.wopen("SingleSACExperimentVvsAngle.txt")
-    fileob.printf("Maximum_Calcium_Concentration_Across_Angles %g\n",expcontrast)
-    fileob.printf("Angle Max_V Max_CAi \n")
-    for i=0,SAC[chosenSAC].variAngle.size()-1{
-        fileob.printf("%g %g %g\n",SAC[chosenSAC].variAngle.x[i],voltagevec.x[i], caivec.x[i] )
-    }
-    fileob.printf("%g %g %g\n",SAC[chosenSAC].variAngle.x[0],voltagevec.x[0], caivec.x[0] )
-    fileob.printf("%g %g %g\n",SAC[chosenSAC].variAngle.x[1],voltagevec.x[1], caivec.x[1] )
-    fileob.close()
+    
     }
   print "vvsangle done"
     if (network1||network2||DingNetwork||fakenetwork){
@@ -1252,378 +820,12 @@ if(SingleSACExperiment){
         fileob.close()
         */
 
-        print "ready to graph conductances"
-        fileob.wopen("SingleSACExperimentConductances.txt")
-        fileob.printf("SingleSACExperimentConductances \n")
-        fileob.printf("t space sac/bip g \n")
-        /*
-        for j=0, ISACLrecList.count()-1{
-            for i=0,tstop-1{
-                if(ISACLrecList.object(j).x[i]==0){
-                    //fileob.printf("%g %g sac  \n",i ,ISACLpos-Xorg.x[chosenSAC])
-                }else{
-                    fileob.printf("%g %g sac %g\n",i ,ISACLpos-Xorg.x[chosenSAC], ISACLrecList.object(j).x[i] )
-                }
-            }
-        }
-        for j=0, ISACRrecList.count()-1{
-            for i=0,tstop-1{
-                if(ISACRrecList.object(j).x[i]==0){
-                    //fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
-                }else{
-                    fileob.printf("%g %g sac %g\n",i ,ISACRpos-Xorg.x[chosenSAC], ISACRrecList.object(j).x[i] )
-                }
-            }
-        }
-        */
-        for l=0,numFirst-1{
-
-        access SAC[chosenSAC].dend[l]
-        pos=x3d(0)-((x3d(0)-x3d(1))/2)
-            for i=0,tstop-1{
-                    if(inhibitveclist.object(j).x[i]==0){
-                        //fileob.printf("%g %g sac  \n",i ,ISACRpos-Xorg.x[chosenSAC])
-                    }else{
-                        fileob.printf("%g %g sac %g\n",i ,pos-Xorg.x[chosenSAC], inhibitveclist.object(j).x[i] )
-                    }
-            }
-        }
-        for l=0, whichbip.size()-1{
-            j=whichbip.x[l]
-            for i=0,tstop-1{
-                if(IBIPrecList.object(j).x[i] ==0 ){
-                    //fileob.printf("%g %g bip  \n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC] )
-                }else{
-                    fileob.printf("%g %g bip %g\n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC],  IBIPrecList.object(j).x[i] )
-                }
-            }
-        }
         
-        
-        for l=0, whichdend.size()-1{
-            j=whichdend.x[l]
-            for i=0, tstop-1{  
-                access SAC[chosenSAC].dend[j]
-                if(j-numInside>=0){
-                    fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList.object(j-numInside).x[i] )
-                }else{
-                    fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.5)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIrecList2.object(j-numInside2).x[i] )
-                }
-            }
-        }
-        
-        fileob.close()
         
     }
 
-    fileob.wopen("SingleSACExperimentCAI.txt")
-    fileob.printf ("pos1 pos2 pos3 pos4 pos5 pos 6 pos7 pos8 pos9 pos10 pos11 pos12 pos13 pos14 pos15 pos16 pos17 pos18 pos19 pos20 pos21 pos22 pos23 pos24 t\n")
-    for l=0, whichdend.size()-1{
-        j=whichdend.x[l]
-        access SAC[chosenSAC].dend[j]
-        if(j-numInside>=0){
-            fileob.printf("%g ", x3d(0)+((x3d(1)-x3d(0))*.8)-Xorg.x[chosenSAC])
-        }else{
-            fileob.printf("%g ", x3d(0)+((x3d(1)-x3d(0))*.5)-Xorg.x[chosenSAC] )
-        }
-    }
-    fileob.printf("t \n" )
-
-    for i=0, tstop-1{
-        for l=0, whichdend.size()-1{
-            j=whichdend.x[l]
-            if(j-numInside>=0){
-                fileob.printf("%g ", SAC[chosenSAC].CAIrecList.object(j-numInside).x[i])
-            }else{
-                fileob.printf("%g ", SAC[chosenSAC].CAIrecList2.object(j-numInside2).x[i] )
-            }
-        }
-        fileob.printf("%g \n", i)
-    }
-    fileob.close()
-
-    print "conductances graphed"
     
-    fileob.wopen("SingleSACExperimentVTrace.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
-    //voltage ca concentration, ca current, potassium current
-    fileob.printf("V_left CAI_left ICA_left IK_left V_right CAI_right ICA_right IK_right\n")
-    for i=0, SAC[chosenSAC].VrecList.object(Dend1).size()-1{
-        if(expand){
-            fileob.printf("%g %g %g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i] , SAC[chosenSAC].fauxvarirelease.object(Dend1).x[i], SAC[chosenSAC].fauxvaricurrent.object(Dend1).x[i])
-
-            fileob.printf("%g %g %g %g %g\n", SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].CAIrecList.object(Dend2).x[i], SAC[chosenSAC].ICArecList.object(Dend2).x[i] , SAC[chosenSAC].fauxvarirelease.object(Dend2).x[i], SAC[chosenSAC].fauxvaricurrent.object(Dend2).x[i])
-        }else{
-            fileob.printf("%g %g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i], SAC[chosenSAC].IKrecList.object(Dend1).x[i] )
-            fileob.printf("%g %g %g %g\n", SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].CAIrecList.object(Dend2).x[i], SAC[chosenSAC].ICArecList.object(Dend2).x[i], SAC[chosenSAC].IKrecList.object(Dend2).x[i] )
-        }
     }
-    fileob.close()
-   
-
-    //Voltage Trace s
-    /*
-    Dend1=42-numInside
-    Dend2=51-numInside
-    Dend3=57-numInside
-    Dend4=63-numInside
-    Dend5=70-numInside
-    Dend6=76-numInside
-    Dend7=80-numInside
-    Dend8=88-numInside
-
-    fileob.wopen("SingleSACExperimentVTrace.txt")
-    fileob.printf("Calcium_Recordings_from_the_Varicosities_of_a_SAC_at_these_Dendrites %d %d %d %d %d %d %d %d \n", Dend1, Dend2, Dend3, Dend4, Dend5, Dend6, Dend7, Dend8)
-    fileob.printf("Angle_of_the_dendrites %g %g %g %g %g %g %g %g \n", SAC[chosenSAC].variAngle.x[Dend1], SAC[chosenSAC].variAngle.x[Dend2], SAC[chosenSAC].variAngle.x[Dend3], SAC[chosenSAC].variAngle.x[Dend4], SAC[chosenSAC].variAngle.x[Dend5], SAC[chosenSAC].variAngle.x[Dend6], SAC[chosenSAC].variAngle.x[Dend7], SAC[chosenSAC].variAngle.x[Dend8] )
-    for i=0, SAC[chosenSAC].CAIrecList.object(Dend1).size()-1{
-        fileob.printf(" %g %g %g %g %g %g %g %g \n", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].VrecList.object(Dend3).x[i], SAC[chosenSAC].VrecList.object(Dend4).x[i], SAC[chosenSAC].VrecList.object(Dend5).x[i], SAC[chosenSAC].VrecList.object(Dend6).x[i], SAC[chosenSAC].VrecList.object(Dend7).x[i], SAC[chosenSAC].VrecList.object(Dend8).x[i] )
-    }
-    fileob.close()
-    */
-
-   //timevec.x[i]
-
-    }
-    }
-}
-if(SingleSACDSIvsContrast){
-    print "SingleSACDSIvsContrast"
-    build()
-    delay()
-    savevariangle()
-    if (network1||network2){
-        connecting()
-        print " we have connected"
-        chosenSAC= 4//56//?//MAKE EQUATION
-    }else{
-        chosenSAC=0
-    }
-
-    for (w=.1;w<=.6;w=w+.02){ //.02
-        expcontrast=w
-        setg()
-        run()
-        //We don't need to check every dendrite, just the ones in the preferred an null directions. This would not work for anything besides 0 degrees
-        Dend1=27 //LEFT
-        DendVn=SAC[chosenSAC].VrecList.object(Dend1).max()
-        DendCAn=SAC[chosenSAC].CAIrecList.object(Dend1).max()
-        Dend2=3 //RIGHT
-        DendVp=SAC[chosenSAC].VrecList.object(Dend2).max()
-        DendCAp=SAC[chosenSAC].CAIrecList.object(Dend2).max()
-        
-        DSIV=abs((DendVp-DendVn)/(DendVn+DendVp))
-        DSICA=abs((DendCAp-DendCAn)/(DendCAn+DendCAp))
-
-        contrastvec.append(w)
-        voltagevec.append(DSIV)
-        caivec.append(DSICA)
-    }
-    fileob.wopen("SingleSACDSIvsContrast.txt")
-    fileob.printf("DSIvsContrast \n")
-    fileob.printf("Contrast DSIV DSICA \n")
-    for i=0,voltagevec.size()-1{
-        fileob.printf("%g %g %g\n",contrastvec.x[i],voltagevec.x[i], caivec.x[i] )
-    }
-    fileob.close()
     
-
-}
-if (SingleSACVGCCExperiment){
-    print"SingleSACVGCCExperiment"
-    simply=0
-    chosendend=0
-    ivsv=1
-    bottom=-50
-    inc=10
-    vinquestion=bottom+inc  //If you are writting to Itrace this needs to have been included
-    vnum=(vinquestion-bottom)/inc
-    tdel=100
-    
-    if(simply){
-        simplething=new simple()
-        access simplething.soma
-    }else{
-        build()
-        setg()
-        access SAC[0].soma //SAC[0].dend[42]//
-    }
-    clamps[0]=new VClamp(.5)
-        clamps[0].dur[0]=tdel
-        clamps[0].dur[1]=100
-        clamps[0].dur[2]=tstop-tdel-100
-        clamps[0].amp[2]=bottom
-        clamps[0].amp[0]=bottom
-
-    temp=new Vector()
-    if(ivsv){                           //--------------ivsv
-        if(simply){
-            gbar_calrgc=0
-        }else{
-            
-            for idend=0, SAC[i2].VrecList.count()-1{
-                access SAC[0].dend[42+idend]
-                gbar_calrgc=0
-            }
-            /*
-            for idend=0, 17{  //REMEBER TO FIX THIS
-                access SAC[0].dend[idend]
-                gkbar_kv=0
-            }
-            */
-        }
-        for i=1, top{
-            clamps[0].amp[1]=bottom+inc*i
-            temp2=new Vector()
-            temp2.record(&clamps[0].i,1)  //record soma current
-            run()
-            without[i-1].copy(temp2)
-            if(simply){
-                caiwithout[i-1].copy(simplething.CAIrecList.o(0)) //additionally cai in the soma
-                icawithout[i-1].copy(temp2)
-                vspot[i-1].copy(SAC[0].VrecList.o(0))  
-            }else{
-                icawithout[i-1].copy(SAC[0].ICArecList.o(chosendend)) //or cai in the dend and ica in the dend
-                caiwithout[i-1].copy(SAC[0].CAIrecList.o(chosendend))
-                vspot[i-1].copy(SAC[0].VrecList.o(chosendend))
-            }
-        }
-        if(simply){
-            gbar_calrgc=cachannelg
-        }else{
-            
-            for idend=0, SAC[i2].VrecList.count()-1{
-            access SAC[0].dend[42+idend]
-            gbar_calrgc=cachannelg
-            }
-            /*
-            for idend=0, 17{
-                access SAC[0].dend[idend]
-                gkbar_kv=kchannelg
-            }
-            */
-        }
-        temp=new Vector()
-        for i=1, top{
-            clamps[0].amp[1]=bottom+inc*i
-            temp2=new Vector()
-            temp2.record(&clamps[0].i,1)
-            run()
-            with[i-1].copy(temp2)
-            if(simply){
-                caiwith[i-1].copy(simplething.CAIrecList.o(0))
-                icawith[i-1].copy(temp2)    //were just cheating by saving the same thing twice because I didn't want to redo the text files
-            }else{
-                icawith[i-1].copy(SAC[0].ICArecList.o(chosendend)) 
-                caiwith[i-1].copy(SAC[0].CAIrecList.o(chosendend))
-            }
-        }
-
-        for i=0, top-1{
-            difference[i]=with[i].c.sub(without[i])
-            if (simply){
-                caidifference[i]=caiwith[i].c.sub(caiwithout[i])
-                icadifference[i]=icawith[i].c.sub(icawithout[i])
-            }else{
-                caidifference[i]=caiwith[i].c.sub(caiwithout[i])
-                icadifference[i]=icawith[i].c.sub(icawithout[i])
-            }
-        }
-        
-        fileob.wopen("SingleSACVGCCExperimentIvsV.txt")
-        fileob.printf("voltage somaICAstabilized CAImax dendV dendICA \n")
-        for i=0, top-1{
-            if(simply){
-                fileob.printf("%g %g %g %g %g \n", bottom+(i+1)*inc, difference[i].x[tstop/2], caidifference[i].x[tstop/2], vspot[i].x[tstop/2], icadifference[i].x[tstop/2])
-            }else{
-                fileob.printf("%g %g %g %g %g \n", bottom+(i+1)*inc, difference[i].x[tstop/2], caidifference[i].x[tstop/2], vspot[i].x[tstop/2], icadifference[i].x[tstop/2] )
-            }
-        }
-        fileob.close()  
-        
-        
-        fileob.wopen("SingleSACVGCCExperimentICAalltraces.txt")
-        fileob.printf("ICAalltraces \n")
-        for i=0, top-1{
-            fileob.printf("somaICA%g ", bottom+(i+1)*inc)
-        }
-        for i=0, top-1{
-            fileob.printf("CAI%g ", bottom+(i+1)*inc)
-        }
-        for i=0, top-1{
-            fileob.printf("dendV%g ", bottom+(i+1)*inc)
-        }
-        for i=0, top-1{
-            fileob.printf("ICAdend%g ", bottom+(i+1)*inc)
-        }
-        fileob.printf("\n")
-        for i=0, difference[0].size()-1{
-            for whichv=0, top-1{
-                fileob.printf("%g ",difference[whichv].x[i])
-            }
-            for whichv=0, top-1{
-                if(whichv==top-1){
-                    fileob.printf("%g ",caidifference[whichv].x[i])
-                }else{
-                    fileob.printf("%g ",caidifference[whichv].x[i])
-                }
-            }
-            for whichv=0, top-1{
-                fileob.printf("%g ",vspot[whichv].x[i])
-            }
-            for whichv=0, top-1{
-                if(whichv==top-1){
-                    fileob.printf("%g \n",icadifference[whichv].x[i])
-                }else{
-                    fileob.printf("%g ",icadifference[whichv].x[i])
-                }
-            }
-        }
-        fileob.close()  
-        
-        
-        fileob.wopen("SingleSACVGCCExperimentITrace.txt")
-        fileob.printf("somaICAwith somaICAwithout somaICAdifference CAIwith CAIwithout CAIdifference dendICAwith dendICAwithout dendICAdifference\n")
-        for i=0, tstop-1{
-            fileob.printf("%g %g %g %g %g %g %g %g %g \n", with[vnum-1].x[i], without[vnum-1].x[i], difference[vnum-1].x[i], caiwith[vnum-1].x[i], caiwithout[vnum-1].x[i], caidifference[vnum-1].x[i], icawith[vnum-1].x[i], icawithout[vnum-1].x[i], icadifference[vnum-1].x[i])
-        }
-        fileob.close()
-        
-    }else{                                 //----------otherwise
-        for idend=0, SAC[i2].VrecList.count()-1{
-            access SAC[0].dend[42+idend]
-            gbar_calrgc=cachannelg
-        }
-        temp=new Vector()
-
-        for i=0, top{
-            clamps[0].amp[1]=bottom+inc*i
-            access SAC[0].dend[42]
-            testg.record(&m_calrgc(.8),1)
-            testg2.record(&ica_calrgc(.8),1)
-            run()
-            vec1.append(testg.x[150])
-            vec2.append(testg2.x[150])
-        }
-    
-    
-        fileob.wopen("SingleSACVGCCExperimentTestvsV.txt")
-        for i=0, top-1{
-            fileob.printf("%g %g %g \n", bottom+(i+1)*inc, vec1.x[i], vec2.x[i] )
-        }
-        fileob.close() 
-        
-        graphG6()
-        graphG7()
-    }
-}
-
-if(SimpleClamp){
-    chosenSAC=0
-    print"SimpleClamp"
-    bottom=-60
-    destination=-50
-    tdel=100
-    tdur=100
-    build()
-
 }
 

@@ -46,51 +46,8 @@ begintemplate star
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
                     connect dend[idend*2+GenCount+numD_gen+1](0), dend[idend+GenCount](1)
 
-                    if(igen==numGen-2){  //--second to last generation of dendrites also have vgcc(calrgc) ad a ica>>cai thing(cadiff)
-                         access dend[idend+GenCount]
-                        VrecXpos3.append(x3d(0)+(x3d(1)-x3d(0))*(.8))
-                        VrecYpos3.append(y3d(0)+(y3d(1)-y3d(0))*(.8))
-
-                        temp=new Vector() 
-                        insert calrgc
-                        shift_calrgc=cachannelshift
-                        translation_calrgc=cachanneltranslation
-                        gbar_calrgc=cachannelg
-                        temp.record (&ica(.5),1)
-                        ICArecList2.append(temp)
-
-                        temp= new Vector()         
-                        insert cadiff
-                        temp.record (&cai(.8),1)
-                        CAIrecList2.append(temp)
-                        
-                        CalciumChannel2.append()
-                    }
-                }else{
-                    EndDends.append()
-                    temp=new Vector()
-                    temp.record(&v(0.8),1)
-                    VrecList.append(temp)      //Be aware this may cause problems with stuff already written
-                    VrecXpos.append(x3d(0)+(x3d(1)-x3d(0))*(.8))
-                    VrecXpos2.append(x3d(0)+(x3d(1)-x3d(0))*(.2)) 
-                    VrecYpos.append(y3d(0)+(y3d(1)-y3d(0))*(.8))
-                    VrecYpos2.append(y3d(0)+(y3d(1)-y3d(0))*(.2))
-                    
-                    
-                        temp=new Vector()           //voltage to current to concentration
-                        insert calrgc
-                        shift_calrgc=cachannelshift
-                        translation_calrgc=cachanneltranslation
-                        gbar_calrgc=cachannelg
-                        temp.record (&ica(.8),1)
-                        ICArecList.append(temp)
-
-                        temp= new Vector()         
-                        insert cadiff
-                        temp.record (&cai(.8),1)
-                        CAIrecList.append(temp)
-                        
-                        CalciumChannel.append()
+                }
+                if (igen>=numGen-2){                        //---last or second to last generation
                     
                 }
                 
@@ -117,13 +74,57 @@ begintemplate star
                 htau_max_kv=kv_htau_max
                 nN_kv=kv_nN
             }
-            for iOut=0, numOutside-1{
-                access dend[iOut]
+            for idend=0, numOutside-1 {  //just the outside  
+                access dend[idend+numInside]
                 temp= new Vector()
-                temp.record(&ik(.8),1)
+                temp.record(&ik(.5),1)
                 IKrecList.append(temp)
             }
          
+    }
+    proc placeVari (){
+        distance()  //set origin as soma(0)
+        for idend=0, numDend-1{
+            access dend[idend]
+            numSyn=int(L/variDensity)
+            for iS_D=0, numSyn-1{
+                loc=(iS_D+1)/(numSyn+1)
+                if (distance((loc))>=dendL*(2/3)){      //threshold for varicosity
+                    variXpos.append(x3d(0)+(x3d(1)-x3d(0))*(loc)) //possibleconnectionpoints
+                    variYpos.append(y3d(0)+(y3d(1)-y3d(0))*(loc))
+                    
+                }
+            }
+            if(distance (.5))>=dendL*(2/3){      //threshold for vgcc and cadiff
+                insert calrgc
+                shift_calrgc=cachannelshift
+                translation_calrgc=cachanneltranslation
+                gbar_calrgc=cachannelg
+            
+                insert cadiff
+            }
+        }
+    }
+    proc endinfo(){
+        for idend=0, numOutside-1{
+            access dend[numInside+idend]
+            EndDends.append()
+            endXpos.append(x3d(0)+(x3d(1)-x3d(0))*(.5))
+            endYpos.append(y3d(0)+(y3d(1)-y3d(0))*(.5))
+
+            temp=new Vector()
+            temp.record(&v(0.5),1)
+            VrecList.append(temp)
+
+            temp=new Vector()
+            temp.record (&ica(.5),1)
+            ICArecList.append(temp)
+            
+            temp= new Vector()         
+            temp.record (&cai(.5),1)
+            CAIrecList.append(temp)
+
+        }
     }
     proc placeBip(){
         objectvar temp
@@ -207,6 +208,9 @@ begintemplate star
         placeBip()
         access soma
         placeVGKC()
+        access soma
+        placeVari()
+        endinfo()
     }
 endtemplate star
 

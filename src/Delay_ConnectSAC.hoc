@@ -6,12 +6,12 @@ proc build(){
     }
 }
 proc setg(){
-    if (expbipG1==0||expcontrast==0||expbipG2==0){
+    if (bipG1==0||contrast==0||bipG2==0){
         bipG1=0
         bipG2=0
     }else{
-        bipG1=expbipG1*expcontrast    
-        bipG2=expbipG2*expcontrast
+        bipG1=bipG1*contrast    
+        bipG2=bipG2*contrast
     }
     for i=0,numSACs-1{
         if(nodends==0){
@@ -34,7 +34,7 @@ proc delay(){
         }
     }
 }
-proc biptimes(){
+proc biptimes(){ //Is this useful?
     smalldel=tstop
     bigdel=-1
     for i=0,numSACs-1{
@@ -62,9 +62,9 @@ proc gangdelay(){
 
 proc savetrueangle(){
     for i2=0, numSACs-1{
-        for ivari=0, SAC[i2].VrecXpos.size()-1{
-            x=SAC[i2].VrecXpos.get(ivari)
-            y=SAC[i2].VrecYpos.get(ivari)
+        for ivari=0, numOutside-1{
+            x=SAC[i2].endXpos.get(ivari)
+            y=SAC[i2].endYpos.get(ivari)
             x1=x-Xorg.get(i2)         
             y1=y-Yorg.get(i2)
             SAC[i2].trueAngle.append(atan2(y1,x1))
@@ -72,22 +72,56 @@ proc savetrueangle(){
     }
 }
 
-proc savevariangle(){
+proc saveendangle(){
     for i2=0, numSACs-1{
-        
+        /*
             if(SAC[i2].variAngle.size()>0){
                 SAC[i2].variAngle.remove(0,SAC[i2].variAngle.size()-1)
             }
-        
-        for ivari=0, SAC[i2].VrecXpos.size()-1{
+        */
+        for ivari=0, numOutside-1{
 
-            x=SAC[i2].VrecXpos.get(ivari)
-            y=SAC[i2].VrecYpos.get(ivari)
+            x=SAC[i2].endXpos.get(ivari)
+            y=SAC[i2].endYpos.get(ivari)
             x1=x-Xorg.get(i2)         
             y1=y-Yorg.get(i2)
             newy=(cos(thetas.x[i2])*y1-sin(thetas.x[i2])*x1)
             newx=(sin(thetas.x[i2])*y1+cos(thetas.x[i2])*x1)
-            SAC[i2].variAngle.append(atan2(newy,newx)) 
+            SAC[i2].endAngle.append(atan2(newy,newx)) 
+        }
+        holder=1      //-------pick example left right recordings
+        iofchoice=-1
+        for i=0, SAC[i2].endAngle.size(){
+            if(abs(SAC[i2].endAngle.[i])<holder){
+                holder=abs(SAC[i2].endAngle.[i])
+                iofchoice=i
+            }
+        }
+        SAC[i2].nullpref.x[0]=iofchoice//null
+        holder=1      
+        iofchoice=-1
+        for i=0, SAC[i2].endAngle.size(){
+            if(abs(SAC[i2].endAngle.[i])-PI<holder){
+                holder=abs(SAC[i2].endAngle.[i])-PI
+                iofchoice=i
+            }
+        }
+        SAC[i2].nullpref.x[1]=iofchoice//preferred
+    }
+}
+proc endangle(){
+    for i2=0, numSACs-1{
+        
+        
+        for ivari=0, numOutside-1{
+
+            x=SAC[i2].endXpos.get(ivari)
+            y=SAC[i2].endYpos.get(ivari)
+            x1=x-Xorg.get(i2)         
+            y1=y-Yorg.get(i2)
+            newy=(cos(thetas.x[i2])*y1-sin(thetas.x[i2])*x1)
+            newx=(sin(thetas.x[i2])*y1+cos(thetas.x[i2])*x1)
+            SAC[i2].endAngle.append(atan2(newy,newx)) 
         }
     }
 }
@@ -201,25 +235,50 @@ proc fakeinhibition(){
         fakeinhibitions.append(temp)
     }
 }
-
-
-proc fauxconnect(){
-    FauxRing[chosenSAC]=new fauxring()
-    for ivari=0, numOutside-1{
-        access FauxRing[chosenSAC].dend[ivari]
-        temp=new ComplexCl2(.5)
-        temp.thres=clchannelthres
-        setpointer temp.capre, SAC[chosenSAC].dend[numInside+ivari].cai(.8)
-        SAC[chosenSAC].fauxvari.append(temp)
-        temp=new Vector()
-        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).numreleased,1)
-        SAC[chosenSAC].fauxvarirelease.append(temp)
-        temp=new Vector()
-        temp.record(&SAC[chosenSAC].fauxvari.object(ivari).i,1)
-        SAC[chosenSAC].fauxvaricurrent.append(temp)
+proc fakeinhibition2(){
+    temp=new AlphaSynapseG(abs(position))
+    
+    for i=0, ****{
+        fileob.ropen("ConductanceVector%d.txt",i)
+        temp2=new Vector()
+        temp2.vread(fileob)
+        fileob.close()
+        temp2.play(&temp.g, .025)
     }
+    
+    //make the g values into vectors
+        fileob.ropen("ConductanceVectorRmaster.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorR1master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorL1master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorLmaster.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorL2master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fileob.ropen("ConductanceVectorR2master.txt")
+        temp=new Vector()
+        temp.vread(fileob)
+        ConductanceVectorList.append(temp)
+        fileob.close() 
+        fakeinhibition()
 }
-
 
 proc clampsetup(){
     del=500
@@ -328,26 +387,27 @@ proc Ggraphc(){
     IBIPrecList.object($1*2 +1).plot(g12,6,1)
 }
 
-proc placeSAC(){
+proc placeSAC(){  //sets the positions of the SACs
+    chosenSAC=0
     if(network1){    
         ssdist=60
         griddim=300/ssdist +5
         //expnumSACs=1
-        expnumSACs=griddim*griddim
-    }
-    if(network2){
+        numSACs=griddim*griddim
+    } else if(network2){
         ssdist=75
         placementfreedom=.25
         griddim=3
-        expnumSACs=griddim*griddim
+        numSACs=griddim*griddim
+        chosenSAC=numSACs/2  //if griddim is odd this is the central SAC
+    }else if(DingNetwork){
+        numSACs=7
+    }else if(fakenetwork){
+        numSACs=1
+    }else{
+
     }
-    if(DingNetwork){
-        expnumSACs=7
-    }
-    if(fakenetwork){
-        expnumSACs=1
-    }
-    numSACs=expnumSACs
+    
     
     thetas = new Vector(numSACs)
     for i=0,numSACs-1{
@@ -355,7 +415,7 @@ proc placeSAC(){
     }
 
     makepos=(griddim*ssdist/2) +50
-    if(network1){
+    if(network1){ //I'll worry about this later
         /*
         Xorg= new Vector(numSACs,0)
         Yorg= new Vector(numSACs,0)
@@ -405,7 +465,7 @@ proc placeSAC(){
                 Yorg.x[(griddim*iy)+counter]=ssdist*(irow)+ (ssdist/2)+ freedom.repick() +makepos//bottom edge of the box plus half way
             }
         }       
-    }else if (DingNetwork){
+    }else if (DingNetwork||fakenetwork){
         Xorg=new Vector(numSACs)
         Yorg=new Vector(numSACs)   
         numSACs=expnumSACs
@@ -413,10 +473,12 @@ proc placeSAC(){
         centerY=(sin (PI/3)*140*2)
         Xorg.x[0]=centerX
         Yorg.x[0]=centerY
-        for j=0, numSACs-2{
-            an=j*(PI/3)
-            Xorg.x[j+1]=centerX+(cos(an)*140)
-            Yorg.x[j+1]=centerY+(sin(an)*140)
+        if(DingNetwork){
+            for j=0, numSACs-2{
+                an=j*(PI/3)
+                Xorg.x[j+1]=centerX+(cos(an)*140)
+                Yorg.x[j+1]=centerY+(sin(an)*140)
+            }
         }
 
 
@@ -427,14 +489,7 @@ proc placeSAC(){
         if(ThreeSACVGCCcheck){
             Xorg.x[2]=-120
         }
-    }else if(fakenetwork){
-        Xorg=new Vector(numSACs)
-        Yorg=new Vector(numSACs)   
-        numSACs=expnumSACs
-        centerX=dendL*2
-        centerY=(sin (PI/3)*140*2)
-        Xorg.x[0]=centerX
-        Yorg.x[0]=centerY
+    
     }else {
         Xorg= new Vector(numSACs,0)
         Yorg= new Vector(numSACs,0)

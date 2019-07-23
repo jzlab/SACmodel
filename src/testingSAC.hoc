@@ -102,3 +102,66 @@ proc graphAngleV(){
     }
     g10.flush()
 }
+
+proc fileConductanceBubbleGraph(){
+    if(network2||DingNetwork||fakenetwork){
+
+        fileob.wopen("ConductanceBubbleGraph.txt")
+        fileob.printf("ConductanceBubbleGraph \n")
+        fileob.printf("t space sac/bip/ica g \n")
+        
+        for j=0, ISACrecList.count()-1{  //inhibition //MAKE IT SO IT INCLUDES FAKE INHIBITION TOO
+            for i=0,tstop-1{
+                access SAC[chosenSAC].dend[SAC[chosenSAC].fromList.object(j).x[2]]
+                ISACpos=x3d(0)-((x3d(0)-x3d(1))/2)
+                if(ISACrecList.object(j).x[i]!=0){
+                    fileob.printf("%g %g sac %g\n",i ,ISACpos-Xorg.x[chosenSAC], ISACrecList.object(j).x[i] )
+                }
+            }
+        }
+    
+        for j=0, IBIPrecList.count()-1{  //excitation
+            for i=0,tstop-1{
+                if(IBIPrecList.object(j).x[i] !=0 ){
+                    fileob.printf("%g %g bip %g\n",i ,SAC[chosenSAC].bipSynapses.object(j).locx-Xorg.x[chosenSAC],  IBIPrecList.object(j).x[i] )
+                }
+            }
+        }
+        
+        
+        for j=0, CAIeverythingrecList.count()-1{  //cai
+            for i=0, tstop-1{  
+                access SAC[chosenSAC].dend[j]
+                fileob.printf("%g %g cai %g\n",i ,x3d(0)+((x3d(1)-x3d(0))*.5)-Xorg.x[chosenSAC], SAC[chosenSAC].CAIeverythingrecList.object(j).x[i] )
+                
+            }
+        }
+        
+        fileob.close()
+    }
+}
+proc fileV_CAI_TuningCurves(){
+    fileob.wopen("V_CAI_TuningCurves.txt")
+    fileob.printf("Maximum_Calcium_Concentration_Across_Angles \n")
+    fileob.printf("Angle Max_V Max_CAi \n")
+    for i=0,numOutside-1{
+        fileob.printf("%g %g %g\n",SAC[chosenSAC].endAngle.x[i],SAC[chosenSAC].VrecList.object(i).max(), SAC[chosenSAC].CAIrecList.object(i).max() )
+    } //variAngle needs to be only the outside ones, but do we use it for something else
+    fileob.printf("%g %g %g\n",SAC[chosenSAC].endAngle.x[0],SAC[chosenSAC].VrecList.object(0).max(), SAC[chosenSAC].CAIrecList.object(0).max() )
+    fileob.printf("%g %g %g\n",SAC[chosenSAC].endAngle.x[1],SAC[chosenSAC].VrecList.object(1).max(), SAC[chosenSAC].CAIrecList.object(1).max() )
+    fileob.close()
+}
+
+proc fileEndTraces(){
+    fileob.wopen("EndTraces.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
+    //voltage ca concentration, ca current, potassium current
+    fileob.printf("V_null CAI_null ICA_null IK_null V_preferrec CAI_preferred ICA_preferred IK_preferred\n")
+    SAC[chosenSAC].nullpref.x[0]=Dend1
+    SAC[chosenSAC].nullpref.x[1]=Dend2
+    for i=0, numOutside-1{
+        
+        fileob.printf("%g %g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i], SAC[chosenSAC].IKrecList.object(Dend1).x[i] )
+        fileob.printf("%g %g %g %g\n", SAC[chosenSAC].VrecList.object(Dend2).x[i], SAC[chosenSAC].CAIrecList.object(Dend2).x[i], SAC[chosenSAC].ICArecList.object(Dend2).x[i], SAC[chosenSAC].IKrecList.object(Dend2).x[i] )
+    }
+    fileob.close()
+}
