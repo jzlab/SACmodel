@@ -4,54 +4,7 @@ objectvar scene_vector_[13]
 objectvar ocbox_, ocbox_list_, scene_, scene_list_
 {ocbox_list_ = new List()  scene_list_ = new List()}
 {pwman_place(0,0,0)}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[2] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 0, 1, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[3] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[4] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[5] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[6] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[7] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[8] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
-{
-save_window_ = new Graph(0)
-save_window_.size(25,275,16.6667,183.333)
-scene_vector_[9] = save_window_
-{save_window_.view(25, 16.6667, 250, 166.667, 3, 47, 300.48, 200.32)}
-}
+
 {
 save_window_ = new Graph(0)
 save_window_.size(0,500,-70,0)
