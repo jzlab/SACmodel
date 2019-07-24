@@ -652,12 +652,12 @@ if(SingleSACExperiment){
     }
     if(network1||network2||DingNetwork){  //recording inhibitory g
         numc=SAC[chosenSAC].receivesCl.count() //how many inputs are we getting from other SACs
-        temp3=new Vector()
+        //temp3=new Vector()
         for i=0, numc-1{
             temp=new Vector()
             temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
             ISACrecList.append(temp)
-            temp3.append(  SAC[chosenSAC].fromList.object(i).x[2]) //save what dend it's from)
+           // temp3.append(  SAC[chosenSAC].fromList.object(i).x[2]) //save what dend it's from)
         }
     }else if(fakenetwork){  //-------record fake inhibitory g
         for i=0, fakeinhibitions.count()-1{
