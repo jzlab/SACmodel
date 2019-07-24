@@ -1,12 +1,12 @@
 begintemplate star
-    external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg, numOutside
+    external numGen, numFirst, numDend, somaL, dendD0, dendL, dendD1, cachannelshift, cachannelg, numOutside, variDensity, numInside
     external bipDensity, bipMaxDist, nodends, VGKCMaxDistance, kv_gmax, kv_h_50, kv_n_50, kv_n_slope, kv_h_slope, kv_ntau_50
     external kv_htau_50, kv_ntau_slope, kv_htau_slope, kv_ntau_max, kv_htau_max, kv_nN, dendgpas, dendepas, dendRa, cachanneltranslation
-    public soma, dend, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
-    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends, V2recList, ICA2recList, VrecXpos2, VrecYpos2, ICArecList2, CAIrecList2, CalciumChannel2, VrecXpos3, VrecYpos3
+    public soma, dend, bipSynapses, VrecList, endXpos, endYpos, endAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
+    public InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends, variXpos, variYpos, CAIeverythingrecList,nullpref, variInfo
     create soma, dend[2] 
-    objectvar temp, bipSynapses, VrecList, VrecXpos, VrecYpos, variAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList, V2recList, ICA2recList
-    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends, VrecXpos2, VrecYpos2, ICArecList2, CAIrecList2, CalciumChannel2, VrecXpos3, VrecYpos3
+    objectvar temp, bipSynapses, VrecList, endXpos, endYpos, endAngle, trueAngle, ICArecList, CAIrecList, receivesCl, fromList, IKrecList
+    objectvar InnerXpos, InnerYpos, CalciumChannel, CalciumCurrent, MrecList, gangConnects, fauxvari, fauxvarirelease, fauxvaricurrent, EndDends, variXpos, variYpos, CAIeverythingrecList, nullpref, variInfo
     
     proc Morph(){
         objectvar temp
@@ -37,10 +37,7 @@ begintemplate star
                 if (igen<numGen-1) {                         //---before last generation - do put 0 point for next generation 2 dends
                     access dend[idend*2+GenCount+numD_gen]
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
-                    connect dend[idend*2+GenCount+numD_gen](0), dend[idend+GenCount](1)
-                    temp=new Vector()
-                    temp.record(&v(0.5),1)
-                    V2recList.append(temp)    
+                    connect dend[idend*2+GenCount+numD_gen](0), dend[idend+GenCount](1)    
                     
                     access dend[idend*2+GenCount+numD_gen+1]
                     pt3dadd(locx+$1,locy+$2,0,dendDiamNext)
@@ -48,7 +45,16 @@ begintemplate star
 
                 }
                 if (igen>=numGen-2){                        //---last or second to last generation
-                    
+                    access dend[idend+GenCount]
+                    insert calrgc
+                    shift_calrgc=cachannelshift
+                    translation_calrgc=cachanneltranslation
+                    gbar_calrgc=cachannelg
+            
+                    insert cadiff
+                    temp= new Vector()         
+                    temp.record (&cai(.5),1)
+                    CAIeverythingrecList.append(temp)
                 }
                 
             }
@@ -89,19 +95,15 @@ begintemplate star
             numSyn=int(L/variDensity)
             for iS_D=0, numSyn-1{
                 loc=(iS_D+1)/(numSyn+1)
-                if (distance((loc))>=dendL*(2/3)){      //threshold for varicosity
+                if (distance((loc))>=(dendL*(2/3))){      //threshold for varicosity
                     variXpos.append(x3d(0)+(x3d(1)-x3d(0))*(loc)) //possibleconnectionpoints
                     variYpos.append(y3d(0)+(y3d(1)-y3d(0))*(loc))
-                    
+                    temp=new Vector(2)
+                    temp.x[0]=idend
+                    temp.x[1]=loc
+                    variInfo.append(temp)
+
                 }
-            }
-            if(distance (.5))>=dendL*(2/3){      //threshold for vgcc and cadiff
-                insert calrgc
-                shift_calrgc=cachannelshift
-                translation_calrgc=cachanneltranslation
-                gbar_calrgc=cachannelg
-            
-                insert cadiff
             }
         }
     }
@@ -164,23 +166,20 @@ begintemplate star
         create dend[numDend]
         
         VrecList=new List()
-        V2recList=new List()
-        ICA2recList=new List()
         InnerXpos= new Vector()
         InnerYpos= new Vector()
-        VrecXpos=new Vector()
-        VrecYpos=new Vector()
-        VrecXpos2=new Vector()
-        VrecYpos2=new Vector()
-        VrecXpos3=new Vector()
-        VrecYpos3=new Vector()
-        variAngle=new Vector()
+        endXpos=new Vector()
+        endYpos=new Vector()
+        variXpos=new Vector()
+        variYpos=new Vector()
+        variInfo=new List()
+        endAngle=new Vector()
+        nullpref=new Vector(2)
         trueAngle= new Vector()
         ICArecList=new List()
         IKrecList=new List()
         CAIrecList= new List()
-        CAIrecList2=new List()
-        ICArecList2=new List()
+        CAIeverythingrecList= new List()
         receivesCl= new List()
         fromList= new List()
         MrecList= new List()
@@ -193,7 +192,6 @@ begintemplate star
         gangConnects.x[1]=0
         gangConnects.x[2]=0
         CalciumChannel=new SectionList()
-        CalciumChannel2=new SectionList()
         
         GenCount=0
 		rotate=0

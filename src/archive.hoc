@@ -1,3 +1,29 @@
+if(ThreeSACVGCCcheck){
+    expnumSACs=3
+    expcontrast=.36
+}
+
+if(clchannelcheck){
+    expnumSACs=2
+    exptstop=1500
+}
+if (SingleSACVGCCExperiment){
+    exptstop=300
+    expbipG1=0
+    expbipG2=0
+    expnumSACs=1
+
+}
+if(SimpleClamp){
+    exptstop=300
+    expbipG1=0
+    expbipG2=0
+    expnumSACs=1
+    clampingdend=69
+    clampingdend1=clampingdend
+}
+
+
 if(TwoSACLeeExperimentSimple){
     Simple[0]=new simple()
     Simple[1]=new simple()
@@ -442,4 +468,32 @@ if(SimpleClamp){
 
    //timevec.x[i]
 
+}
+{//SingleSACExperimentDetailedTraces
+    //SPECIAL TRACES SECTION
+    if(0==1){
+    fileob.wopen("SingleSACExperimentDetailedTraces.txt")
+    fileob.printf("SingleSACExperimentDetailedTraces %g\n",expcontrast)
+    fileob.printf("Left4up Left4 Left3up Left3 Left2 Left1 InhibL InhibR Right1 Right2 Right3up Right3 Right4up Right4 \n")
+    for i=0, tstop-1{
+        fileob.printf("%g %g %g %g %g %g %g %g %g %g %g %g %g %g\n",SAC[chosenSAC].VrecList.object(67-numInside).x[i],SAC[chosenSAC].VrecList.object(69-numInside).x[i], SAC[chosenSAC].V2recList.object(30).x[i],SAC[chosenSAC].V2recList.object(31).x[i],SAC[chosenSAC].V2recList.object(12).x[i], SAC[chosenSAC].V2recList.object(3).x[i], inhibitvecL.x[i], inhibitvecR.x[i], SAC[chosenSAC].V2recList.object(0).x[i], SAC[chosenSAC].V2recList.object(7).x[i],SAC[chosenSAC].V2recList.object(21).x[i], SAC[chosenSAC].V2recList.object(20).x[i],   SAC[chosenSAC].VrecList.object(48-numInside).x[i], SAC[chosenSAC].VrecList.object(46-numInside).x[i])
+    }
+    fileob.close()
+    }
+    if(0==1){
+    
+    }
+  print "vvsangle done"
+    if (network1||network2||DingNetwork||fakenetwork){
+        /* these don't exist anymore
+        fileob.wopen("SingleSACExperimentExciteInhibit.txt")
+        fileob.printf("Single_SAC_Experiment_Excite_Inhibit \n")
+        fileob.printf("t excite inhibit \n")
+        for i=0,tstop-2{
+            fileob.printf("%g %g %g\n",i ,excitevec.x[i], inhibitvec.x[i] )
+        }
+        fileob.close()
+        */
+
+        
 }
