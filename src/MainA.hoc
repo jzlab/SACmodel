@@ -5,8 +5,8 @@ TwoSACLeeExperiment=0
 
 network1=0 //probably not
 network2=0
-DingNetwork=1
-fakenetwork=0
+DingNetwork=0
+fakenetwork=1
 
 
 //-----------------------------------BEGIN PARAMETERS
@@ -118,7 +118,7 @@ if (SingleSACDingExperiment){
     chosenSAC=0
     objectvar testg, testg2, g6, g5, g7, g8, g9, g4, g10,g12, testg4, testg3, testg5, SAC[numSACs], fileob, g, voltagevec, timevec, maxdifvec, clamps[numclamps], clampcurrent, without[top], with[top], FauxRing[2], simplething, emptyvec, vspot[top]
     objectvar voltagejumps, randSAC, Gang, temp, currentmaxs, differencemin, List1, List2, temp2, difference[top], Simple[numSimp], vec1, vec2, randSACs, randCon
-    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec,  inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec,  histvec, whichconnection, whichbip, whichdend, imagbip, imagbipselect, fakeinhibitions,  ConductanceVectorList, inhibitveclist, thetas, fileob2, temp3, ConductanceVectorList
+    objectvar caivec, caiwithout[top], caiwith[top], caidifference[top], icawithout[top], icawith[top], icadifference[top], vspot[top], excitevec, IBIPrecList, inhibitvec, ISACrecList, contrastvec,  inhibitvecL, inhibitvecR, excitevecL, excitevecR, emptyvec,  histvec, whichconnection, whichbip, whichdend, imagbip, imagbipselect, fakeinhibitions,  ConductanceVectorList, inhibitveclist, thetas, fileob2, temp3, ConductanceVectorList, asgConductanceList, temp4, gvectimes
     testg=new Vector()
     testg2=new Vector()
     testg3=new Vector()
@@ -183,6 +183,8 @@ if (SingleSACDingExperiment){
     fakeinhibitions=new List()
     ConductanceVectorList= new List()
     inhibitveclist= new List()
+    asgConductanceList=new List()
+    gvectimes=new Vector()
 
 objectvar Xorg, Yorg
 objectvar ranCord, freedom
@@ -559,10 +561,10 @@ if(SingleSACExperiment){
         if (batch>0){
             counter=0
             for (j=.6;j<=1.2;j=j+.1){
-                for (i=.5;i<=.7;i=i+.9){
+                for (i=.7;i<=.7;i=i+.9){
                     for k=0,1{
                         DingNetwork=k
-                        //fakenetwork=0^k
+                        fakenetwork=0^k
                         bipspeed=i
                         contrast=j 
                         counter=counter+1
@@ -652,12 +654,12 @@ if(SingleSACExperiment){
     }
     if(network1||network2||DingNetwork){  //recording inhibitory g
         numc=SAC[chosenSAC].receivesCl.count() //how many inputs are we getting from other SACs
-        //temp3=new Vector()
+        temp3=new Vector()
         for i=0, numc-1{
             temp=new Vector()
             temp.record(&SAC[chosenSAC].receivesCl.object(i).g,1) //current or conductance?
             ISACrecList.append(temp)
-           // temp3.append(  SAC[chosenSAC].fromList.object(i).x[2]) //save what dend it's from)
+            temp3.append(  SAC[chosenSAC].fromList.object(i).x[2]) //save what dend it's from)
         }
     }else if(fakenetwork){  //-------record fake inhibitory g
         for i=0, fakeinhibitions.count()-1{
@@ -666,23 +668,38 @@ if(SingleSACExperiment){
             ISACrecList.append(temp)
         }
     }
-    testg.record(&SAC[chosenSAC].receivesCl.object(0).g,1)
     run()
-    graphG6()
+    
+
     //--------recording resulting conductances
-    recordingConductances=1
+    recordingConductances=0
     if(recordingConductances){
+        print "recording conductances"
         strdef st
         if(DingNetwork||network2){
             fileob.wopen("ConductanceVectorLoc.txt")
             temp3.vwrite(fileob)
             fileob.close()
+            
             for i=0, ISACrecList.count()-1{
                 sprint(st, "ConductanceVector%d.txt", i)  
                 fileob.wopen(st)
-                ConductanceVectorList.o(i).vwrite(fileob)
+                ISACrecList.o(i).vwrite(fileob)
                 fileob.close()
+                for it=0, ISACrecList.object(i).size()-1{
+                    if(ISACrecList.object(i).x[it]!=0){
+                        gvectimes.append(it)
+                        break
+                    }else{
+                        if(it==ISACrecList.object(i).size()-1){
+                            gvectimes.append(0)
+                        }
+                    }
+                }
             }
+            fileob.wopen("ConductanceVectorTimes.txt")
+            gvectimes.vwrite(fileob)
+            fileob.close(0)
             print "we have ", ISACrecList.count(), "conductance vectors"
         }
     }
@@ -701,8 +718,9 @@ if(SingleSACExperiment){
     //objective 3
     fileConductanceBubbleGraph() 
     
-    //just a sample output
-    if(DingNetwork||network2||fakenetwork){
+    //just a sample output (Does this work with Fake Inhibition?)
+    /*
+    if(DingNetwork||network2){ //||fakenetwork
         inhibitvecR= new Vector(ISACrecList.object(0).size()) 
         inhibitvecL= new Vector(ISACrecList.object(0).size())
         for i=0, ISACrecList.count()-1{
@@ -734,6 +752,7 @@ if(SingleSACExperiment){
     testg2= excitevecR
     graphG6()
     graphG7()
+    */
     //objective 1.0
     fileV_CAI_TuningCurves()
     fileEndTraces()
@@ -742,8 +761,6 @@ if(SingleSACExperiment){
 
  
     //--------Come back to this
-
-   
     if(0==1&&(FakeNetworkLoopingPosition||FakeNetworkLoopingTimes)){
         
         fileob.aopen("SingleSACFakeNetwork.txt")

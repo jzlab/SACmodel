@@ -25,20 +25,14 @@ PARAMETER {
 	tau=.1 (ms)	<1e-3,1e6>
 	gmax=0 	(uS)	<0,1e9>
 	e=0	(mV)
+	g=0 (uS)
 }
 
-ASSIGNED { v (mV) i (nA)  g (uS)}
+ASSIGNED { i (nA) }
 
 BREAKPOINT {
-	if (gmax) { at_time(onset) }
+	
 	:g = gmax * alpha( (t - onset)/tau )
-	i = g*(v - e)
+	 i =(1e-3)* g*(v - e)
 }
 
-FUNCTION alpha(x) {
-	if (x < 0 || x > 10) {
-		alpha = 0
-	}else{
-		alpha = x * exp(1 - x)
-	}
-}

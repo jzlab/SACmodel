@@ -103,6 +103,7 @@ proc graphAngleV(){
     g10.flush()
 }
 
+
 proc fileConductanceBubbleGraph(){  //written to be across the x axis not the axis of motion //if you change from .5 to another number make sure the 0s and 1s are going the right direction
     if(network2||DingNetwork||fakenetwork){
 
@@ -113,7 +114,8 @@ proc fileConductanceBubbleGraph(){  //written to be across the x axis not the ax
         
         for j=0, ISACrecList.count()-1{  //inhibition //MAKE IT SO IT INCLUDES FAKE INHIBITION TOO
             for i=0,tstop-1{
-                access SAC[chosenSAC].dend[SAC[chosenSAC].fromList.object(j).x[2]]
+                if(DingNetwork){access SAC[chosenSAC].dend[SAC[chosenSAC].fromList.object(j).x[2]]}
+                if(fakenetwork){access SAC[chosenSAC].dend[temp3.x[j]]}
                 ISACpos=x3d(0)-((x3d(0)-x3d(1))/2)
                 if(ISACrecList.object(j).x[i]!=0){
                     fileob.printf("%g %g sac %g\n",i ,ISACpos-Xorg.x[chosenSAC], ISACrecList.object(j).x[i] )
