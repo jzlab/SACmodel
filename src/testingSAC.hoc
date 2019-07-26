@@ -113,9 +113,18 @@ proc fileConductanceBubbleGraph(){  //written to be across the x axis not the ax
         counter=3
         
         for j=0, ISACrecList.count()-1{  //inhibition //MAKE IT SO IT INCLUDES FAKE INHIBITION TOO
+            if(DingNetwork){access SAC[chosenSAC].dend[SAC[chosenSAC].fromList.object(j).x[2]]}
+            if(fakenetwork){
+                if(everythinginthesoma){
+                    access SAC[chosenSAC].soma
+                }else if(everythingontheoutside){
+                    access SAC[chosenSAC].dend[ConductanceVectorNewLoc.x[j]]
+                }else{
+                    access SAC[chosenSAC].dend[ConductanceVectorLoc.x[j]]
+                }
+            }
             for i=0,tstop-1{
-                if(DingNetwork){access SAC[chosenSAC].dend[SAC[chosenSAC].fromList.object(j).x[2]]}
-                if(fakenetwork){access SAC[chosenSAC].dend[temp3.x[j]]}
+                
                 ISACpos=x3d(0)-((x3d(0)-x3d(1))/2)
                 if(ISACrecList.object(j).x[i]!=0){
                     fileob.printf("%g %g sac %g\n",i ,ISACpos-Xorg.x[chosenSAC], ISACrecList.object(j).x[i] )
@@ -132,7 +141,7 @@ proc fileConductanceBubbleGraph(){  //written to be across the x axis not the ax
                 }
             }
         }
-        
+        /*
         print "ConductanceBubbles cai first occurance", counter+1
         for j=0, SAC[chosenSAC].CAIeverythingrecList.count()-1{  //cai
             for i=0, tstop-1{  
@@ -141,7 +150,7 @@ proc fileConductanceBubbleGraph(){  //written to be across the x axis not the ax
                 
             }
         }
-        
+        */
         fileob.close()
     }
 }

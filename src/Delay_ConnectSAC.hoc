@@ -34,6 +34,23 @@ proc delay(){
         }
     }
 }
+func PosToTime(){
+    x=$1
+    y=$2
+    return (((cos(thetas.x[chosenSAC])*x+sin(thetas.x[chosenSAC])*y))*bipspeed +50+dendL)
+}
+func round(){
+    if((abs($1)%1)<.5){
+        return int($1)
+    }else{
+        if($1>0){
+            addition=1
+        }else{
+            addition=-1
+        }
+        return int($1) +addition
+    }
+}
 proc biptimes(){ //Is this useful?
     smalldel=tstop
     bigdel=-1
@@ -222,26 +239,53 @@ proc fakeinhibition(){
 }
 proc fakeinhibition2(){
     fileob2.ropen("ConductanceVectorLoc.txt")
-    temp3=new Vector()
-    temp3.vread(fileob2)
+    ConductanceVectorLoc=new Vector()
+    ConductanceVectorLoc.vread(fileob2)
     fileob2.close()
-    fileob2.ropen("ConductanceVectorTimes.txt")
-    gvectimes=new Vector()
-    gvectimes.vread(fileob2)
-    fileob2.close()
-    for i=0, temp3.size()-1{ 
+    for i=0, ConductanceVectorLoc.size()-1{ 
         strdef st
         sprint(st, "ConductanceVector%d.txt", i)
         fileob.ropen(st)
-        temp2=new Vector()
-        temp2.vread(fileob)
-        access SAC[chosenSAC].dend[temp3.x[i] ]
+        gvec=new Vector()
+        gvec.vread(fileob)
+        if(expandcollapse){
+            access SAC[chosenSAC].dend[ConductanceVectorLoc.x[i] ]  //access where it was originally synapsing onto
+            pos=(x3d(0)-((x3d(0)-x3d(1))/2))-Xorg.x[chosenSAC]
+            shift= round(pos*fifactor)   
+            if(shift>0){
+                temp4=new Vector(shift) //add so it's later
+                gvec.insrt(0,temp4)
+            }else if( shift<0){  //subtract so it's earlier
+                shift=abs(shift)
+                gvec.remove(0, shift-1)
+            }
+            gvec.resize(tstop+1)
+        }
+        if(shiftingt){
+            if(shiftt>0){
+                temp4=new Vector(shiftt)
+                gvec.insrt(0, temp4)
+            }else if(shiftt<0){
+                shift=abs(shiftt)
+                gvec.remove(0, shift-1)
+            }
+            gvec.resize(tstop+1)
+        }
+        if(everythinginthesoma){
+            access SAC[chosenSAC].soma
+        }else if(everythingontheoutside){
+            odend=numInside+8*ConductanceVectorLoc.x[i]
+            adding=(countvec.x[ConductanceVectorLoc.x[i]])%(2^3) //remainder when %8 means 8=0 and we cycle again
+            access SAC[chosenSAC].dend[odend +adding]
+            countvec.x[ConductanceVectorLoc.x[i]]=countvec.x[ConductanceVectorLoc.x[i]] +1 //add one to whichever element of countvec we correspond to
+            ConductanceVectorNewLoc.append(odend +adding)
+        }else{
+            access SAC[chosenSAC].dend[ConductanceVectorLoc.x[i] ]
+        }
         temp=new AlphaSynapseG(.5)
-        temp2.play(800)//(gvectimes.x[i])
-        temp2.play(&temp.g,1)   //all our problems must happen here
+        gvec.play(&temp.g,1)   
         temp.e=-65
-        temp.onset=gvectimes.x[i]
-        asgConductanceList.append(temp2)
+        asgConductanceList.append(gvec)
         fakeinhibitions.append(temp)
         fileob.close() 
     }
