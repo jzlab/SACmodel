@@ -6,6 +6,7 @@ TwoSACLeeExperiment=0
 network1=0 //probably not
 network2=0
 DingNetwork=1
+rabbit=0
 fakenetwork=0
 
 
@@ -47,7 +48,9 @@ bipG2=.2
 variDensity=15
 
 //SAC connection
-SACmaxDist=15
+SACmaxDist=30//15
+connectfar=0
+
 //complex cl channel
 clchannelthres=.2//.008
 clchannelscaling=.125//59.35//8.75//.00000016//8//.000004//70 //max capre^4 makes probrelease =1 (err on the side of 1.1)
@@ -90,7 +93,7 @@ if(fakenetwork){
     fitau=20
     figmax=1
     fie=-65
-    expandcollapse=1
+    expandcollapse=0
     if(expandcollapse){
         fifactor=0
     }
@@ -107,6 +110,7 @@ CalciumConductance=.05
 
 if (SingleSACExperiment){
     tstop=800
+    bipspeed=.2
 }
 if(TwoSACLeeExperiment){
     numSACs=2
@@ -693,13 +697,13 @@ if(SingleSACExperiment){
     }
     run()
     
-    if(fakenetwork){
+    if(fakenetwork||DingNetwork){
         for i=0, ISACrecList.count()-1{
             testg=ISACrecList.object(i)
             graphG6()
         }
     }
-
+    
     //----record what time the conductance comes at relative to the center
     fileob.wopen("ConductanceVectorTimes.txt")    
     if(1==1) { //very useful for time shifting      
@@ -722,7 +726,7 @@ if(SingleSACExperiment){
     fileob.close()
 
     //--------recording resulting conductances
-    recordingConductances=1
+    recordingConductances=0
     if(recordingConductances){
         print "recording conductances"
         strdef st
@@ -756,27 +760,33 @@ if(SingleSACExperiment){
     fileConductanceBubbleGraph() 
     
     //just a sample output (Does this work with Fake Inhibition?)
-    /*
-    if(DingNetwork||network2){ //||fakenetwork
+    
+    if(DingNetwork||network2||fakenetwork){
         inhibitvecR= new Vector(ISACrecList.object(0).size()) 
         inhibitvecL= new Vector(ISACrecList.object(0).size())
+        inhibitvec=new Vector(ISACrecList.object(0).size())
         for i=0, ISACrecList.count()-1{
-            if(SAC[chosenSAC].fromList.object(i).x[2]==0){  //right
+            inhibitvec.add(ISACrecList.object(i))
+            if(ConductanceVectorLoc.x[i]==0){  //right
                 inhibitvecR.add(ISACrecList.object(i))
-            }else if(SAC[chosenSAC].fromList.object(i).x[2]==3){ //left
+            }else if(ConductanceVectorLoc.x[i]==3){ //left
                 inhibitvecL.add(ISACrecList.object(i))
             }
         }
-        inhibitvecL.plot(g6,1,1)
+        testg2=inhibitvec
+        inhibitvecL.plot(g7,1,1)
         inhibitvecR.plot(g7,1,1)
+        graphG7()
     }
-*/
+
 
     excitevecR=new Vector(IBIPrecList.object(0).size())
     excitevecL=new Vector(IBIPrecList.object(0).size())
+    excitevec=new Vector(IBIPrecList.object(0).size())
     for k=0, IBIPrecList.count()-1{
         belongs=0
         belongstobranch(k, 0)
+        excitevec.add(IBIPrecList.object(k))
         if(belongs==1){
             excitevecR.add(IBIPrecList.object(k))
         } else{
@@ -786,8 +796,9 @@ if(SingleSACExperiment){
             }
         }
     }
-    excitevecL.plot(g6,1,1)
+    testg=excitevecL
     excitevecR.plot(g6,1,1)
+    excitevec.plot(g6,1,1)
     graphG6()
    
     //objective 1.0

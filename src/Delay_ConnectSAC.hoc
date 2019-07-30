@@ -29,7 +29,7 @@ proc delay(){
         for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
             x=SAC[i].bipSynapses.object(ibipSyn).locx
             y=SAC[i].bipSynapses.object(ibipSyn).locy
-            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))*bipspeed +50+dendL
+            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))*bipspeed +1*(50+dendL)  //change left right
 
         }
     }
@@ -155,12 +155,26 @@ proc connecting(){
             for iSAC=0, numSACs-1{
                 if (iSAC==i2){ 
                 }else{
-                    if(((Xorg.x[iSAC]-x)^2)+ ((Yorg.x[iSAC]-y)^2)<(dendL/4)^2){      //we're close enough to the iSAC
-                        for idend=0, numFirst-1{
+                   
+                    if(connectfar){     //near far condition
+                        idend1=numInside
+                        idend2=numDend-1
+                        fielddist=400
+                    }else{
+                        idend1=0
+                        idend2=numFirst-1
+                        fielddist=(dendL/4)^2
+                    }
+                    if(((Xorg.x[iSAC]-x)^2)+ ((Yorg.x[iSAC]-y)^2)<fielddist){      //we're close enough to the iSAC //only useful if we connect close
+                        for idend=idend1, idend2{
                             access SAC[iSAC].dend[idend]
-                            dendx= SAC[iSAC].InnerXpos.x[idend] 
-                            dendy= SAC[iSAC].InnerYpos.x[idend]
-                            
+                            if(connectfar){
+                                dendx=(x3d(0)+(x3d(1)-x3d(0))*(.5))
+                                dendy=(y3d(0)+(y3d(1)-y3d(0))*(.5))
+                            }else{
+                                dendx= SAC[iSAC].InnerXpos.x[idend] 
+                                dendy= SAC[iSAC].InnerYpos.x[idend]
+                            }
                             if(((dendx-x)^2 + (dendy-y)^2)< SACmaxDist^2){           //we're close enough to the dend
                                 temp=new ComplexCl2(.5) 
                                 temp.scaling=clchannelscaling
@@ -238,13 +252,13 @@ proc fakeinhibition(){
     }
 }
 proc fakeinhibition2(){
-    fileob2.ropen("ConductanceVectorLoc.txt")
+    fileob2.ropen("ConductanceVectorLocMoveLeft.txt") //change left right
     ConductanceVectorLoc=new Vector()
     ConductanceVectorLoc.vread(fileob2)
     fileob2.close()
     for i=0, ConductanceVectorLoc.size()-1{ 
         strdef st
-        sprint(st, "ConductanceVector%d.txt", i)
+        sprint(st, "ConductanceVectorMoveLeft%d.txt", i)  //change left right
         fileob.ropen(st)
         gvec=new Vector()
         gvec.vread(fileob)
@@ -480,16 +494,21 @@ proc placeSAC(){  //sets the positions of the SACs
         }       
     }else if (DingNetwork||fakenetwork){
         Xorg=new Vector(numSACs)
-        Yorg=new Vector(numSACs)   
-        centerX=dendL*2
-        centerY=(sin (PI/3)*140*2)
+        Yorg=new Vector(numSACs)  
+        if(rabbit){
+            ssdist=(dendL*2 )-10
+        }else{
+            ssdist=dendL
+        }
+        centerX=dendL+ssdist*2
+        centerY=(sin (PI/3)*dendL*2)
         Xorg.x[0]=centerX
         Yorg.x[0]=centerY
         if(DingNetwork){
             for j=0, numSACs-2{
                 an=j*(PI/3)
-                Xorg.x[j+1]=centerX+(cos(an)*140)
-                Yorg.x[j+1]=centerY+(sin(an)*140)
+                Xorg.x[j+1]=centerX+(cos(an)*ssdist)
+                Yorg.x[j+1]=centerY+(sin(an)*ssdist)
             }
         }
 
