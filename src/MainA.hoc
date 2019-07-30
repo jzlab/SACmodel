@@ -110,7 +110,7 @@ CalciumConductance=.05
 
 if (SingleSACExperiment){
     tstop=800
-    bipspeed=.2
+    bipspeed=.7
 }
 if(TwoSACLeeExperiment){
     numSACs=2

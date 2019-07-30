@@ -500,7 +500,7 @@ proc placeSAC(){  //sets the positions of the SACs
         }else{
             ssdist=dendL
         }
-        centerX=dendL+ssdist*2
+        centerX=dendL+ssdist
         centerY=(sin (PI/3)*dendL*2)
         Xorg.x[0]=centerX
         Yorg.x[0]=centerY
