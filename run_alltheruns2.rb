@@ -1,21 +1,15 @@
 #pid = fork { exec('run_SingleSACExperiment.sh') }
 FILE_LIST= ['run1.sh', 'run2.sh']
-
 def execute_files(file_list)
     pid_list=[]
     file_list.each do |file_name|
         exec ("mkdir -p ./log")
-        pid = fork{ exec( "sh #{file_name}") }
-        pid_list.push(pid)
+	fork do
+		exec( "sh #{file_name}")
+	end
     end
-    pid_list
+    Process.waitall
 end
-
-puts "Running files: \n#{FILE_LIST}"
-
-pids = execute_files(FILE_LIST)
-
-puts "pids: #{pid_list}"
 
 #irb  -r
 
