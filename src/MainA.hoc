@@ -48,8 +48,11 @@ bipG2=.2
 variDensity=15
 
 //SAC connection
-SACmaxDist=30//15
+SACmaxDist=15
 connectfar=0
+if (connectfar){
+    SACmaxDist=30
+}
 
 //complex cl channel
 clchannelthres=.2//.008
@@ -109,8 +112,10 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=800
+    tstop=100
     bipspeed=.7
+    contrast=1.1
+    dt=0.1
 }
 if(TwoSACLeeExperiment){
     numSACs=2
@@ -599,7 +604,7 @@ if(SingleSACExperiment){
             }
         }
     }
-    FakeNetworkLoopingTimes=0
+    FakeNetworkLoopingTimes=1
     if(FakeNetworkLoopingTimes){
         if (batch>0){
             counter=0
@@ -657,7 +662,7 @@ if(SingleSACExperiment){
     build()
     setg()
     delay()
-    print " contrast=", contrast," speed=",bipspeed, "shiftt=",shiftt, " DingNetwork=", DingNetwork,"fakenetwork= ", fakenetwork, "expandcollapse=", expandcollapse, "everythinginthesoma=", everythinginthesoma
+    print " contrast=", contrast," speed=",bipspeed, "shiftt=",shiftt, " DingNetwork=", DingNetwork,"fakenetwork= ", fakenetwork, "expandcollapse=", expandcollapse, "everythinginthesoma=", everythinginthesoma, "rabbit=", rabbit
 
     saveendangle()  //save the angle relative to the direction of motion and our nullpref
     //bring in the inhibition

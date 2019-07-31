@@ -159,7 +159,7 @@ proc connecting(){
                     if(connectfar){     //near far condition
                         idend1=numInside
                         idend2=numDend-1
-                        fielddist=400
+                        fielddist=500000
                     }else{
                         idend1=0
                         idend2=numFirst-1
