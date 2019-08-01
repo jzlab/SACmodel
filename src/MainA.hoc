@@ -1,4 +1,3 @@
-//nothing new
 GanglionExperiment=0
 SingleSACExperiment=1
 SingleSACDingExperiment=0
@@ -579,13 +578,13 @@ if (SingleSACDingExperiment){
 }
 if(SingleSACExperiment){
 
-    DingNetworkLooping=0
+    DingNetworkLooping=1 //across speeds and contrasts
     if(DingNetworkLooping){
         if (batch>0){
             counter=0
-            for (j=.6;j<=1.2;j=j+.1){
-                for (i=.7;i<=.7;i=i+.9){
-                    for k=0,1{
+            for (j=.6;j<=.6;j=j+.1){
+                for (i=.1;i<=1.9;i=i+.2){
+                    for k=1,1{
                         DingNetwork=k
                         fakenetwork=0^k
                         bipspeed=i
@@ -605,7 +604,7 @@ if(SingleSACExperiment){
             }
         }
     }
-    FakeNetworkLoopingTimes=1
+    FakeNetworkLoopingTimes=0
     if(FakeNetworkLoopingTimes){
         if (batch>0){
             counter=0
