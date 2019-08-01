@@ -18,7 +18,7 @@ VAR="run"
 COUNTER=1
 
 for i in {1..10} 
-xdo 
+do 
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
