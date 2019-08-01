@@ -17,17 +17,18 @@ nrnivmodl
 echo "Running Experiment..."
 
 VAR="run"
-COUNTER=1
+COUNTER=0
 
 for i in {1..2} 
 do 
-
+((COUNTER+=1))
+echo $COUNTER
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
 
-((COUNTER+=1))
+
 done
 
  
