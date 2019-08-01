@@ -18,7 +18,7 @@ echo "Running Experiment..."
 
 VAR="run"
 COUNTER=1
-for i in {1..10}
+for (( i=1; i<=5; i++ ))
  do
  echo "welcome $i times"
 
