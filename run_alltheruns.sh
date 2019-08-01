@@ -27,7 +27,7 @@ VARRUN="$VAR$COUNTER"
 VARRUNFILE="$VARRUN$SUFFIX"
 tmux new-session -d -s $VARRUN
 
-tmux send -t  "$VARRUN" 'nrngui -nogui VARRUNFILE' ENTER
+tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUNFILE' ENTER
 
 COUNTER=$(( $COUNTER + 1 ))
 
