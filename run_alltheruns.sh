@@ -1,6 +1,10 @@
 
 cd src/
 
+EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
+echo "refreshing output files..."  #will this be okay if it doesn't exist?
+rm SingleSACExperimentSpeedsAndContrasts.txt
+
 rm -rf x86_64/
 
 # Compile resources
@@ -23,6 +27,8 @@ tmux send -t "run1" 'nrngui -nogui run1.hoc ' ENTER
 tmux new-session -d -s run2
 tmux send -t "run2" 'nrngui -nogui run2.hoc ' ENTER
 
+echo "Moving output files to $EXP_OUTPUT_DIR"
+mv SingleSACExperimentSpeedsAndContrasts.txt $EXP_OUTPUT_DIR/
 
 
 
