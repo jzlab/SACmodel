@@ -25,6 +25,8 @@ while [ $COUNTER -le 10 ]
 
 VARRUN="$VAR$COUNTER"
 VARRUNFILE="$VARRUN$SUFFIX"
+echo $VARRUNFILE
+
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUNFILE' ENTER
