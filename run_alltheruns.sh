@@ -21,7 +21,7 @@ COUNTER=1
 
 for i in {1..10} 
 do 
-
+ echo "$i"
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
