@@ -20,14 +20,15 @@ VAR="run"
 COUNTER=1
 while [  $COUNTER -lt 10 ]; do
 
- echo "$COUNTER"
+ echo  counter is $COUNTER
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
 
-((COUNTER+=1))
+#((COUNTER+=1))
+let COUNTER=COUNTER+1 
 
 done
 
