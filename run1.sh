@@ -2,8 +2,8 @@ cd src/
 
 EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
 echo "creating output files..."
-touch SingleSACExperimentVvsAngle.txt
-touch SingleSACExperimentVTrace.txt
+#touch SingleSACExperimentVvsAngle.txt
+#touch SingleSACExperimentVTrace.txt
 
 rm -rf x86_64/
 
@@ -15,5 +15,5 @@ echo "Running Experiment..."
 nrngui -nogui run1.hoc
 
 echo "Moving output files to $EXP_OUTPUT_DIR"
-mv SingleSACExperimentVvsAngle.txt $EXP_OUTPUT_DIR/
-mv SingleSACExperimentVTrace.txt $EXP_OUTPUT_DIR/
+mv EndTraces.txt $EXP_OUTPUT_DIR/
+mv V_CAI_TuningCurves.txt $EXP_OUTPUT_DIR/
