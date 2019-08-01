@@ -13,6 +13,10 @@ nrnivmodl
  
 
 echo "Running Experiment..."
+foo ="hello"
+foo += "world"
+echo $foo
+
 VAR= "run"
 
 for i in {1..10} do 
