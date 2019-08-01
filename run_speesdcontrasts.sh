@@ -1,7 +1,7 @@
 
 cd src/
 
-EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
+
 echo "refreshing output files..."  
 touch SingleSACExperimentSpeedsAndContrasts.txt
 rm SingleSACExperimentSpeedsAndContrasts.txt
@@ -43,8 +43,7 @@ done
 #tmux new-session -d -s run2
 #tmux send -t "run2" 'nrngui -nogui run2.hoc ' ENTER
 
-echo "Moving output files to $EXP_OUTPUT_DIR"
-mv SingleSACExperimentSpeedsAndContrasts.txt $EXP_OUTPUT_DIR/
+
 
 
 

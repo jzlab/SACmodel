@@ -112,7 +112,7 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=100
+    tstop=800
     bipspeed=.7
     contrast=1.1
     dt=0.1
