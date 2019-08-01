@@ -13,7 +13,7 @@ VARCOUNTER= "1"
 VARRUN= "$VAR$VARCOUNTER"
 tmux new-session -d -s 
 
-tmux send -t  "run2" 'nrngui -nogui $VARRUN.hoc' ENTER
+tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
  
 
 
