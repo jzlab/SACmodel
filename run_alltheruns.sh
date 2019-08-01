@@ -4,6 +4,8 @@ cd src/
 EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
 echo "refreshing output files..."  
 touch SingleSACExperimentSpeedsAndContrasts.txt
+rm SingleSACExperimentSpeedsAndContrasts.txt
+touch SingleSACExperimentSpeedsAndContrasts.txt
 
 rm -rf x86_64/
 
@@ -17,10 +19,10 @@ echo "Running Experiment..."
 VAR="run"
 COUNTER=1
 
-for i in {1..10} 
+for i in {1..2} 
 do 
 
-VARRUN="$VAR$i"
+VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
