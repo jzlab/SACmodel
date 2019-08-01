@@ -11,7 +11,7 @@ echo "Running Experiment..."
 VAR= "run"
 VARCOUNTER= "1"
 VARRUN= "$VAR$VARCOUNTER"
-tmux new-session -d -s 
+tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
  
