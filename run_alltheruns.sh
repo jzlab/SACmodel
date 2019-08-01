@@ -1,15 +1,20 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> 92dde672d159ce5bd71e07069dd4db6ef3e914da
 cd src/
-tmux new-session -d -s run2
 
-tmux send -t  "run2" 'nrngui -nogui run2.hoc' ENTER
+rm -rf x86_64/
+
+# Compile resources
+echo "Compiling model files..."
+nrnivmodl
  
-<<<<<<< HEAD
+echo "Running Experiment..."
+VAR= "run"
+VARCOUNTER= "1"
+VARRUN= "$VAR$VARCOUNTER"
+tmux new-session -d -s 
+
+tmux send -t  "run2" 'nrngui -nogui $VARRUN.hoc' ENTER
+ 
 
 
-=======
->>>>>>> 92dde672d159ce5bd71e07069dd4db6ef3e914da
 
