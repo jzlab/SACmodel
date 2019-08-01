@@ -2,8 +2,8 @@ cd src/
 
 EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
 echo "creating output files..."
-#touch SingleSACExperimentVvsAngle.txt
-#touch SingleSACExperimentVTrace.txt
+touch EndTraces.txt
+touch V_CAI_TuningCurves.txt
 
 rm -rf x86_64/
 
