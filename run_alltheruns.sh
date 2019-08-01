@@ -18,17 +18,16 @@ echo "Running Experiment..."
 
 VAR="run"
 COUNTER=1
-for (( i=1; i<=5; i++ ))
+while [ $COUNTER -le 10 ]
  do
- echo "welcome $i times"
-
  echo  counter is $COUNTER
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
-#((COUNTER+=1))
+
+COUNTER=$(( $COUNTER + 1 ))
 
 
 done
