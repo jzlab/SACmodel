@@ -13,14 +13,14 @@ nrnivmodl
  
 
 echo "Running Experiment..."
-foo ="hello"
-foo += "world"
+foo="hello"
+foo+="world"
 echo $foo
 
-VAR= "run"
+VAR="run"
 
 for i in {1..10} do 
-VARRUN= "$VAR$i"
+VARRUN="$VAR$i"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
