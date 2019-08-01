@@ -23,10 +23,11 @@ while [ $COUNTER -le 10 ]
  do
  echo  counter is $COUNTER
 
-VARRUN="$VAR$COUNTER$SUFFIX"
+VARRUN="$VAR$COUNTER"
 
 tmux new-session -d -s $VARRUN
-tmux send -t  "$VARRUN" 'filename=$(tmux display-message -p "#S")' ENTER
+tmux send -t  "$VARRUN" 'suffix=.hoc' ENTER
+tmux send -t  "$VARRUN" 'filename="$(tmux display-message -p "#S")$suffix"' ENTER
 tmux send -t  "$VARRUN" 'nrngui -nogui $filename' ENTER
 
 COUNTER=$(( $COUNTER + 1 ))
