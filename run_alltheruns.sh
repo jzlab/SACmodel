@@ -3,7 +3,7 @@ cd src/
 
 EXP_OUTPUT_DIR="/home/audreyt/data/SACmodel/SingleSACExperimentResults"
 echo "refreshing output files..."  #will this be okay if it doesn't exist?
-rm SingleSACExperimentSpeedsAndContrasts.txt
+touch SingleSACExperimentSpeedsAndContrasts.txt
 
 rm -rf x86_64/
 
