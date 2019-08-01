@@ -17,6 +17,7 @@ nrnivmodl
 echo "Running Experiment..."
 
 VAR="run"
+SUFFIX=".hoc"
 COUNTER=1
 while [ $COUNTER -le 10 ]
  do
@@ -25,7 +26,7 @@ while [ $COUNTER -le 10 ]
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
 
-tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
+tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN$SUFFIX' ENTER
 
 COUNTER=$(( $COUNTER + 1 ))
 
