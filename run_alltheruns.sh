@@ -20,7 +20,7 @@ COUNTER=1
 for i in {1..10} 
 do 
 
-VARRUN="$VAR$COUNTER"
+VARRUN="$VAR$i"
 tmux new-session -d -s $VARRUN
 
 tmux send -t  "$VARRUN" 'nrngui -nogui $VARRUN.hoc' ENTER
