@@ -17,7 +17,8 @@ echo "Running Experiment..."
 VAR="run"
 COUNTER=1
 
-for i in {1..10} do 
+for i in {1..10} 
+xdo 
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
