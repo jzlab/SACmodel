@@ -18,10 +18,9 @@ echo "Running Experiment..."
 
 VAR="run"
 COUNTER=1
+while [  $COUNTER -lt 10 ]; do
 
-for i in {1..10} 
-do 
- echo "$i"
+ echo "$COUNTER"
 
 VARRUN="$VAR$COUNTER"
 tmux new-session -d -s $VARRUN
