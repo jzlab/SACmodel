@@ -113,8 +113,8 @@ CalciumConductance=.05
 
 if (SingleSACExperiment){
     tstop=800
-    bipspeed=.7
-    contrast=1.1
+    bipspeed=.1
+    contrast=.6
     dt=0.1
 }
 if(TwoSACLeeExperiment){
@@ -578,7 +578,7 @@ if (SingleSACDingExperiment){
 }
 if(SingleSACExperiment){
 
-    DingNetworkLooping=1 //across speeds and contrasts
+    DingNetworkLooping=0 //across speeds and contrasts
     if(DingNetworkLooping){
         if (batch>0){
             counter=0
