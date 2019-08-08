@@ -3,7 +3,7 @@
 NEURON{
     POINT_PROCESS ComplexCl2
     NONSPECIFIC_CURRENT i
-    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau1, tau2
+    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau1, tau2, rando
     POINTER capre
 }
 
@@ -29,6 +29,7 @@ ASSIGNED{
     ves[5]
     thyme[5]
     numreleased
+    rando
     after
     test
     alpha
@@ -119,7 +120,8 @@ FUNCTION getnumreleased(capre1,t2){
         l=0
         while(l<numves){
             if (ves[l]==0){
-                if(.5<=(t2-thyme[l])/regentime){
+                rando=scop_random()
+                if(rando<=(t2-thyme[l])/regentime){
                     ves[l]=1
                 }
             }
@@ -139,7 +141,8 @@ FUNCTION getnumreleased(capre1,t2){
         w=0
         while(w<5){
             if(ves[w]==1){
-                if(.5<=probrelease){             :inequality?
+                rando=scop_random()
+                if(rando<=probrelease){             :inequality?
                     ves[w]=0
                     thyme[w]=t2
                 }

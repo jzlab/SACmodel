@@ -707,7 +707,7 @@ if(SingleSACExperiment){
     d=SAC[a].fromList.object[b].x[1]
     print a,b,c,d
     testg.record(&SAC[a].receivesCl.object(b).probrelease,1)
-    testg2.record(&SAC[a].receivesCl.object(b).numreleased,1)
+    testg2.record(&SAC[a].receivesCl.object(b).rando,1)
     run()
     graphG6()
     graphG7()
