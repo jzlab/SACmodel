@@ -82,7 +82,7 @@ BREAKPOINT{
     SOLVE state METHOD euler
     
     if (t>t1){ 
-        numreleased=getnumreleased(capre,t)
+        getnumreleased(capre,t)
         A=A+numreleased*amp
         B=B+numreleased*amp
         t1=t1+1
