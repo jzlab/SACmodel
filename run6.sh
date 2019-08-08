@@ -15,6 +15,6 @@ echo "Compiling model files..."
 nrnivmodl
  
 echo "Running Experiment..."
-nrngui run6.hoc
+nrngui -nogui run6.hoc
 
 
