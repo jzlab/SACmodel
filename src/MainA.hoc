@@ -708,12 +708,16 @@ if(SingleSACExperiment){
     print a,b,c,d
     testg.record(&SAC[a].receivesCl.object(b).before,1)
     testg2.record(&SAC[a].receivesCl.object(b).after,1)
+    testg4.record(&SAC[a].receivesCl.object(b).numreleased,1)
+    
     
     run()
     testg3=testg.c.sub(testg2)
     graphG6()
     graphG7()
     graphG8()
+    graphG9()
+    
     /*
     if(fakenetwork||DingNetwork){
         for i=0, ISACrecList.count()-1{
