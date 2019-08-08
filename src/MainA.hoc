@@ -112,7 +112,7 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=800
+    tstop=300
     bipspeed=.1
     contrast=.6
     dt=0.1
@@ -700,15 +700,25 @@ if(SingleSACExperiment){
             ISACrecList.append(temp)
         }
     }
+
+    a=0                         //cd synapse onto ab
+    b=0
+    c=SAC[a].fromList.object[b].x[0]
+    d=SAC[a].fromList.object[b].x[1]
+    print a,b,c,d
+    testg.record(&SAC[a].receivesCl.object(b).capre,1)
+    testg2.record(&SAC[a].receivesCl.object(b).g,1)
     run()
-    
+    graphG6()
+    graphG7()
+    /*
     if(fakenetwork||DingNetwork){
         for i=0, ISACrecList.count()-1{
             testg=ISACrecList.object(i)
             graphG6()
         }
     }
-    
+    */
     //----record what time the conductance comes at relative to the center
     fileob.wopen("ConductanceVectorTimes.txt")    
     if(1==1) { //very useful for time shifting      
@@ -778,10 +788,12 @@ if(SingleSACExperiment){
                 inhibitvecL.add(ISACrecList.object(i))
             }
         }
+        /*
         testg2=inhibitvec
         inhibitvecL.plot(g7,1,1)
         inhibitvecR.plot(g7,1,1)
         graphG7()
+        */
     }
 
 
@@ -801,10 +813,12 @@ if(SingleSACExperiment){
             }
         }
     }
+    /*
     testg=excitevecL
     excitevecR.plot(g6,1,1)
     excitevec.plot(g6,1,1)
     graphG6()
+    */
    
     //objective 1.0
     fileV_CAI_TuningCurves()
