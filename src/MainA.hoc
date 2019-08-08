@@ -700,7 +700,7 @@ if(SingleSACExperiment){
             ISACrecList.append(temp)
         }
     }
-
+    /*
     a=0                         //cd synapse onto ab
     b=0
     c=SAC[a].fromList.object[b].x[0]
@@ -709,14 +709,16 @@ if(SingleSACExperiment){
     testg.record(&SAC[a].receivesCl.object(b).before,1)
     testg2.record(&SAC[a].receivesCl.object(b).after,1)
     testg4.record(&SAC[a].receivesCl.object(b).numreleased,1)
-    
+    */
     
     run()
+    /*
     testg3=testg.c.sub(testg2)
     graphG6()
     graphG7()
     graphG8()
     graphG9()
+    */
     
     /*
     if(fakenetwork||DingNetwork){
