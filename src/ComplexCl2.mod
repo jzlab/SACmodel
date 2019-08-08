@@ -109,7 +109,8 @@ DERIVATIVE state {
         ENDCOMMENT
 
 FUNCTION gettest(){
-    gettest=scop_random()
+    gettest= .5
+    :gettest=scop_random()
     
 }
 FUNCTION getnumreleased(capre1,t2){
@@ -118,7 +119,7 @@ FUNCTION getnumreleased(capre1,t2){
         l=0
         while(l<numves){
             if (ves[l]==0){
-                if(scop_random()<=(t2-thyme[l])/regentime){
+                if(.5<=(t2-thyme[l])/regentime){
                     ves[l]=1
                 }
             }
@@ -138,7 +139,7 @@ FUNCTION getnumreleased(capre1,t2){
         w=0
         while(w<5){
             if(ves[w]==1){
-                if(scop_random()<=probrelease){             :inequality?
+                if(.5<=probrelease){             :inequality?
                     ves[w]=0
                     thyme[w]=t2
                 }
