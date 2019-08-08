@@ -578,7 +578,7 @@ if (SingleSACDingExperiment){
 }
 if(SingleSACExperiment){
 
-    DingNetworkLooping=0 //across speeds and contrasts
+    DingNetworkLooping=1 //across speeds and contrasts
     if(DingNetworkLooping){
         if (batch>0){
             counter=0
