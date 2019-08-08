@@ -3,7 +3,7 @@
 NEURON{
     POINT_PROCESS ComplexCl2
     NONSPECIFIC_CURRENT i
-    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau1, tau2, rando
+    RANGE e,g,numreleased, ves, thyme, after, test,alpha, thres, i, probrelease, scaling, amp, tau1, tau2, rando, before
     POINTER capre
 }
 
@@ -31,6 +31,7 @@ ASSIGNED{
     numreleased
     rando
     after
+    before
     test
     alpha
     probrelease
@@ -115,7 +116,7 @@ FUNCTION gettest(){
     
 }
 FUNCTION getnumreleased(capre1,t2){
-    LOCAL before, w, l
+    LOCAL w, l
     if(capre1>thres){
         l=0
         while(l<numves){
