@@ -29,7 +29,7 @@ proc delay(){
         for ibipSyn=0, SAC[i].bipSynapses.count()-1{                                             //delay
             x=SAC[i].bipSynapses.object(ibipSyn).locx
             y=SAC[i].bipSynapses.object(ibipSyn).locy
-            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))*bipspeed +1*(50+dendL)  //change left right
+            SAC[i].bipSynapses.object(ibipSyn).del= ((cos(thetas.x[i])*x+sin(thetas.x[i])*y))*(1/bipspeed) +1*(50+dendL)  //change left right
 
         }
     }
