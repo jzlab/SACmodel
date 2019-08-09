@@ -252,13 +252,13 @@ proc fakeinhibition(){
     }
 }
 proc fakeinhibition2(){
-    fileob2.ropen("ConductanceVectorLocMoveLeft.txt") //change left right
+    fileob2.ropen("ConductanceVectorLoc.txt") //change left right
     ConductanceVectorLoc=new Vector()
     ConductanceVectorLoc.vread(fileob2)
     fileob2.close()
     for i=0, ConductanceVectorLoc.size()-1{ 
         strdef st
-        sprint(st, "ConductanceVectorMoveLeft%d.txt", i)  //change left right
+        sprint(st, "ConductanceVector%d.txt", i)  //change left right
         fileob.ropen(st)
         gvec=new Vector()
         gvec.vread(fileob)
@@ -502,8 +502,13 @@ proc placeSAC(){  //sets the positions of the SACs
         }else{
             ssdist=dendL
         }
-        centerX=dendL+ssdist
-        centerY=(sin (PI/3)*dendL*2)
+        if(fakeinhibition){
+            centerX=
+            centerY=
+        }else{
+            centerX=dendL+ssdist
+            centerY=(sin (PI/3)*dendL*2)
+        }
         Xorg.x[0]=centerX
         Yorg.x[0]=centerY
         if(DingNetwork){

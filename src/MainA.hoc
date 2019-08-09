@@ -7,12 +7,12 @@ network1=0 //probably not
 network2=0
 DingNetwork=0
 connectfar=0
-rabbit=1 //positions them far apart
+rabbit=0 //positions them far apart
 if(rabbit){
     connectfar=1
 }
 halfrabbit=0
-fakenetwork=0
+fakenetwork=1
 tracetheg=1
 
 
@@ -583,7 +583,7 @@ if (SingleSACDingExperiment){
 }
 if(SingleSACExperiment){
 
-    DingNetworkLooping=1 //across speeds and contrasts
+    DingNetworkLooping=0 //across speeds and contrasts
     if(DingNetworkLooping){
         if (batch>0){
             counter=0
