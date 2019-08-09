@@ -6,7 +6,7 @@ TwoSACLeeExperiment=0
 network1=0 //probably not
 network2=0
 DingNetwork=1
-rabbit=0 //positions them far apart
+rabbit=1 //positions them far apart
 if(rabbit){
     connectfar=1
 }
@@ -116,7 +116,7 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=1000
+    tstop=1600
     bipspeed=.1
     contrast=.6
     dt=0.1
