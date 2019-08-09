@@ -8,6 +8,7 @@ network2=0
 DingNetwork=1
 rabbit=1 //positions them far apart
 fakenetwork=0
+tracetheg=0
 
 
 //-----------------------------------BEGIN PARAMETERS
@@ -583,7 +584,7 @@ if(SingleSACExperiment){
         if (batch>0){
             counter=0
             for (j=.6;j<=.6;j=j+.1){
-                for (i=.5;i<=4;i=i+1){
+                for (i=.5;i<=10;i=i+1){
                     for k=1,1{
                         DingNetwork=k
                         fakenetwork=0^k
@@ -720,14 +721,14 @@ if(SingleSACExperiment){
     graphG9()
     */
     
-    /*
-    if(fakenetwork||DingNetwork){
-        for i=0, ISACrecList.count()-1{
-            testg=ISACrecList.object(i)
-            graphG6()
+    if(tracetheg){
+        if(fakenetwork||DingNetwork){
+            for i=0, ISACrecList.count()-1{
+                testg=ISACrecList.object(i)
+                graphG6()
+            }
         }
     }
-    */
     //----record what time the conductance comes at relative to the center
     fileob.wopen("ConductanceVectorTimes.txt")    
     if(1==1) { //very useful for time shifting      
@@ -797,12 +798,12 @@ if(SingleSACExperiment){
                 inhibitvecL.add(ISACrecList.object(i))
             }
         }
-        /*
-        testg2=inhibitvec
-        inhibitvecL.plot(g7,1,1)
-        inhibitvecR.plot(g7,1,1)
-        graphG7()
-        */
+        if(tracetheg){
+            testg2=inhibitvec
+            inhibitvecL.plot(g7,1,1)
+            inhibitvecR.plot(g7,1,1)
+            graphG7()
+        }
     }
 
 
@@ -822,12 +823,12 @@ if(SingleSACExperiment){
             }
         }
     }
-    /*
+    
     testg=excitevecL
     excitevecR.plot(g6,1,1)
     excitevec.plot(g6,1,1)
     graphG6()
-    */
+    
    
     //objective 1.0
     fileV_CAI_TuningCurves()
