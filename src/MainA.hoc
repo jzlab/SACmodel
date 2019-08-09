@@ -6,7 +6,7 @@ TwoSACLeeExperiment=0
 network1=0 //probably not
 network2=0
 DingNetwork=1
-rabbit=1 //positions them far apart
+rabbit=0 //positions them far apart
 fakenetwork=0
 tracetheg=0
 
@@ -50,7 +50,7 @@ variDensity=15
 
 //SAC connection
 SACmaxDist=15
-connectfar=1
+connectfar=0
 if (connectfar){
     SACmaxDist=30
 }
@@ -126,7 +126,7 @@ if(TwoSACLeeExperiment){
 }
 
 if (SingleSACDingExperiment){
-    tstop=800
+    tstop=1000
     contrast=.5
 }
     
