@@ -5,14 +5,15 @@ TwoSACLeeExperiment=0
 
 network1=0 //probably not
 network2=0
-DingNetwork=1
+DingNetwork=0
+connectfar=0
 rabbit=1 //positions them far apart
 if(rabbit){
     connectfar=1
 }
 halfrabbit=0
 fakenetwork=0
-tracetheg=0
+tracetheg=1
 
 
 //-----------------------------------BEGIN PARAMETERS
@@ -116,9 +117,9 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=1600
-    bipspeed=.1
-    contrast=.6
+    tstop=800
+    bipspeed=.5
+    contrast=1
     dt=0.1
 }
 if(TwoSACLeeExperiment){
@@ -588,9 +589,9 @@ if(SingleSACExperiment){
             counter=0
             for (j=.4;j<=1.4;j=j+.2){
                 for (i=.5;i<=10;i=i+1){
-                    for k=1,1{
+                    for k=0,0{
                         DingNetwork=k
-                        fakenetwork=0^k
+                        //fakenetwork=0^k
                         bipspeed=i
                         contrast=j 
                         counter=counter+1
