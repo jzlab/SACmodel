@@ -6,7 +6,7 @@ TwoSACLeeExperiment=0
 network1=0 //probably not
 network2=0
 DingNetwork=1
-rabbit=0
+rabbit=1 //positions them far apart
 fakenetwork=0
 
 
@@ -49,7 +49,7 @@ variDensity=15
 
 //SAC connection
 SACmaxDist=15
-connectfar=0
+connectfar=1
 if (connectfar){
     SACmaxDist=30
 }
@@ -112,7 +112,7 @@ CalciumConductance=.05
 //-----experiment presets
 
 if (SingleSACExperiment){
-    tstop=1000
+    tstop=1600
     bipspeed=.1
     contrast=.6
     dt=0.1
@@ -583,7 +583,7 @@ if(SingleSACExperiment){
         if (batch>0){
             counter=0
             for (j=.6;j<=.6;j=j+.1){
-                for (i=.1;i<=1.9;i=i+.2){
+                for (i=.5;i<=4;i=i+.4){
                     for k=1,1{
                         DingNetwork=k
                         fakenetwork=0^k
