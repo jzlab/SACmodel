@@ -1,0 +1,2 @@
+batch=28
+load_file("MainA.hoc")
