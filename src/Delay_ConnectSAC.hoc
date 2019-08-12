@@ -106,15 +106,7 @@ proc saveendangle(){
             newx=(sin(thetas.x[i2])*y1+cos(thetas.x[i2])*x1)
             SAC[i2].endAngle.append(atan2(newy,newx)) 
         }
-        holder=1      //-------pick example left right recordings
-        iofchoice=-1
-        for i=0, SAC[i2].endAngle.size()-1{
-            if(abs(SAC[i2].endAngle.x[i])<holder){
-                holder=abs(SAC[i2].endAngle.x[i])
-                iofchoice=i
-            }
-        }
-        SAC[i2].nullpref.x[0]=(iofchoice)//null
+
         holder=1      
         iofchoice=-1
         for i=0, SAC[i2].endAngle.size()-1{
@@ -123,7 +115,18 @@ proc saveendangle(){
                 iofchoice=i
             }
         }
-        SAC[i2].nullpref.x[1]=iofchoice//preferred
+        SAC[i2].nullpref.x[0]=iofchoice//null
+
+                holder=1      //-------pick example left right recordings
+        iofchoice=-1
+        for i=0, SAC[i2].endAngle.size()-1{
+            if(abs(SAC[i2].endAngle.x[i])<holder){
+                holder=abs(SAC[i2].endAngle.x[i])
+                iofchoice=i
+                print holder
+            }
+        }
+        SAC[i2].nullpref.x[1]=(iofchoice)//preferred
         
     }
 }
@@ -428,7 +431,11 @@ proc placeSAC(){  //sets the positions of the SACs
         numSACs=griddim*griddim
         chosenSAC=numSACs/2  //if griddim is odd this is the central SAC
     }else if(DingNetwork){
-        numSACs=7
+        if(fakemovement){
+            numSACs=2
+        }else{
+            numSACs=7
+        }
     }else if(fakenetwork){
         numSACs=1
     }else{
@@ -502,13 +509,10 @@ proc placeSAC(){  //sets the positions of the SACs
         }else{
             ssdist=dendL
         }
-        if(fakeinhibition){
-            centerX=
-            centerY=
-        }else{
+        
             centerX=dendL+ssdist
             centerY=(sin (PI/3)*dendL*2)
-        }
+        
         Xorg.x[0]=centerX
         Yorg.x[0]=centerY
         if(DingNetwork){

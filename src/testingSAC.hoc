@@ -170,8 +170,9 @@ proc fileEndTraces(){
     fileob.wopen("EndTraces.txt")  //voltage, ca concentration, current ca, numreleased, postcurrent
     //voltage ca concentration, ca current, potassium current
     fileob.printf("V_null CAI_null ICA_null IK_null V_preferrec CAI_preferred ICA_preferred IK_preferred\n")
-    SAC[chosenSAC].nullpref.x[0]=Dend1
-    SAC[chosenSAC].nullpref.x[1]=Dend2
+    Dend1=SAC[chosenSAC].nullpref.x[0]
+    Dend2=SAC[chosenSAC].nullpref.x[1]
+    
     for i=0, SAC[chosenSAC].VrecList.object(0).size()-1{
         
         fileob.printf("%g %g %g %g ", SAC[chosenSAC].VrecList.object(Dend1).x[i], SAC[chosenSAC].CAIrecList.object(Dend1).x[i], SAC[chosenSAC].ICArecList.object(Dend1).x[i], SAC[chosenSAC].IKrecList.object(Dend1).x[i] )
