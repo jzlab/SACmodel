@@ -5,15 +5,15 @@ TwoSACLeeExperiment=0
 
 network1=0 //probably not
 network2=0
-DingNetwork=1
-fakemovement=1
+DingNetwork=0
+fakemovement=0
 connectfar=0
 rabbit=0 //positions them far apart
 if(rabbit){
     connectfar=1
 }
 halfrabbit=0
-fakenetwork=0
+fakenetwork=1
 tracetheg=1
 
 
@@ -102,16 +102,16 @@ if(fakenetwork){
     fitau=20
     figmax=1
     fie=-65
-    expandcollapse=1
+    expandcollapse=0
     if(expandcollapse){
-        fifactor=2
+        fifactor=-2
     }
-    shiftingt=0
+    shiftingt=1
     if(shiftingt){
-        shiftt=0
+        shiftt=50
     }
     everythinginthesoma=0
-    everythingontheoutside=0
+    everythingontheoutside=1
 }
 CalciumConductance=.05
  
@@ -119,7 +119,7 @@ CalciumConductance=.05
 
 if (SingleSACExperiment){
     tstop=800
-    bipspeed=7.5
+    bipspeed=(1/.7)
     contrast=.8
     dt=0.1
 }
@@ -610,7 +610,7 @@ if(SingleSACExperiment){
             }
         }
     }
-    FakeNetworkLoopingTimes=0
+    FakeNetworkLoopingTimes=1
     if(FakeNetworkLoopingTimes){
         if (batch>0){
             counter=0
@@ -829,7 +829,7 @@ if(SingleSACExperiment){
         }
     }
     
-    testg=excitevecL
+    excitevecL.plot(g6,1,1)
     excitevecR.plot(g6,1,1)
     excitevec.plot(g6,1,1)
     graphG6()

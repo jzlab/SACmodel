@@ -21,7 +21,7 @@ echo "Running Experiment..."
 VAR="run"
 SUFFIX=".hoc"
 COUNTER=1
-while [ $COUNTER -le 60 ]
+while [ $COUNTER -le 16 ]
  do
  echo  counter is $COUNTER
 
