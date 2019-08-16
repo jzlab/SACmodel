@@ -8,6 +8,9 @@ echo "refreshing output files..."
 touch SingleSACExperimentSpeedsAndContrasts.txt
 rm SingleSACExperimentSpeedsAndContrasts.txt
 touch SingleSACExperimentSpeedsAndContrasts.txt
+touch SingleSACFakeNetwork.txt
+rm SingleSACFakeNetwork.txt
+touch SingleSACFakeNetwork.txt
 
 rm -rf x86_64/
 
