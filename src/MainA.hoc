@@ -102,11 +102,11 @@ if(fakenetwork){
     fitau=20
     figmax=1
     fie=-65
-    expandcollapse=1
+    expandcollapse=0
     if(expandcollapse){
         fifactor=-2
     }
-    shiftingt=0
+    shiftingt=1
     if(shiftingt){
         shiftt=50
     }
